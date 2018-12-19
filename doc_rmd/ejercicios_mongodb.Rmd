@@ -5,7 +5,6 @@ author: "Pablo Hidalgo"
 date: "19/12/2018"
 output:
   html_notebook:
-    code_folding: hide
     number_sections: no
     theme: journal
 ---
