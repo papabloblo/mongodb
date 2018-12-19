@@ -3,7 +3,9 @@ title: "MongoDB"
 subtitle: "MBADS (Octubre 2018)"
 author: "Pablo Hidalgo"
 date: "18/12/2018"
-output: html_document
+output: 
+  html_document:
+    theme: journal
 ---
 
 ```{r setup, include=FALSE}
@@ -109,6 +111,13 @@ db.ciudades.insert(
     }
   ]
 )
+```
+
+
+Una función que puede resultar útil es saber cuándos documentos existen dentro de una colección. Esto lo podemos hacer con la función `count()`:
+
+```{}
+db.ciudades.count()
 ```
 
 # Leyendo datos
@@ -227,6 +236,7 @@ Se van añadiendo constantemente nuevos operadores, por lo que es aconsejable co
 - [`$unset`](https://docs.mongodb.com/manual/reference/operator/update/unset/): elimina un campo.
 - [`$inc`](https://docs.mongodb.com/manual/reference/operator/update/inc/): incrementa un campo por un número dado.
 - [`$pop`](https://docs.mongodb.com/manual/reference/operator/update/pop/): eliman el último (o el primer) elemento de un array.
+- [`$push`](https://docs.mongodb.com/manual/reference/operator/update/push/): añade un elemento a un array.
 
 
 <!-- ## Referencias -->
@@ -241,6 +251,30 @@ Otra operación habitual es la de **eliminar documentos** de una colección. En 
 Antes de eliminar cualquier documento, es recomendable ejecutar `find()` para comprobar que el criterio está bien construido y hace lo que queremos que haga. 
 
 > **Ejercicio:** Elimina todos las ciudades en las que gobierne el PSOE.
+
+
+## Eliminar una colección y una base de datos
+
+Por último, dos tareas que pueden ser útiles son las de eliminar una colección entera (junto con todos su documentos) y eliminar completamente una base de datos.
+
+Para eliminar una colección utilizamos `drop()`. Para comprobar su funcionamiento, primero vamos a asegurarnos de las colecciones existentes en nuestra base de datos:
+
+```{}
+show collections
+```
+
+Para eliminar la colección `ciudades` podemos ejecutar
+
+```{}
+db.ciudades.drop()
+```
+
+
+Para eliminar una base de datos completa, necesitamos utilizar `dropDatabase()`. Igual que en el caso anterior, primero mostramos las bases de datos disponibles:
+
+```{}
+show dbs
+```
 
 
 
