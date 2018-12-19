@@ -10,11 +10,6 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# ¿Qué es MongoDB?
-
-
-
-# Instalando MongoDB
 
 # Primeros pasos
 
@@ -70,6 +65,8 @@ SELECT *
 Como habrás observado, el documento contiene un campo `_id` que Mongo genera automáticamente y que se trata de un identificador único, aglo así como el datatype `SERIAL` en PostgreSQL. Este `_id` siempre tiene 12 bytes y está compuesto por un *timestamp*, un identificador de la máquina cliente, un identificador del proceso del cliente y un contador de 3-bytes incremental. 
 
 Aunque pueda parecer que para nosotros, como usuarios, cómo se genere `_id` no es relevante, lo cierto es que esa forma de generarlo permite que cada máquina no tenga que conocer los identificadores que hayan generado otras siendo fundamental para poder lanzar procesos distribuidos (el *dataype* SERIAL de PostgreSQL necesita conocer el último generado para incremetnarlo en una unidad).
+
+> Cunado ejecutamos la función `find()` la consola muestra cada documento en una sola línea que hace difícil la visualización. Puedes añadir al final `.pretty` para obtener una vista más intuitiva. Pruébalo con `db.ciudades.find().pretty()`
 
 <!-- ## JavaScript -->
 
@@ -164,6 +161,33 @@ db.ciudades.find(
 )
 ```
 
+## Operaciones booleanas
+
+Cuando utilizamos la función `find()` estamos utilizando implícitamente operaciones `and`, es decir, solo devuelve aquellos documentos que cumplan **todos** los criterios que hayamos especificado. Por ejemplo, la siguiente sentencia no devuelve ningún resultado ya que ningún documento satisface las dos condiciones **a la vez**:
+
+```{}
+db.ciudades.find(
+  {
+    "nombre": "Sevilla",
+    "alcalde.nombre": "Manuela Carmena"
+  }
+)
+```
+
+Sin embargo, si queremos obtener aquellos registros que satisfacen *alguna* de las condiciones, necesitamos utilizar el operador `or`:
+
+```{}
+db.ciudades.find(
+  {
+    $or: [
+      {"nombre": "Sevilla"},
+      {"alcalde.nombre": "Manuela Carmena"}
+    ]
+  }
+)
+```
+
+
 
 ## Actualizando datos
 
@@ -186,7 +210,38 @@ db.ciudades.update(
 )
 ```
 
-Mongo entendería que lo que quieres es **reeemplazar por completo aquellos el documento de la ciudad de Madrid por `{poblacion: 4000000, ultimo_censo: ISODate("2018-01-01")}`. Así que, presta atención cuando quieras actualizar datos.
+Mongo entendería que lo que quieres es **reeemplazar por completo** aquellos el documento de la ciudad de Madrid por `{poblacion: 4000000, ultimo_censo: ISODate("2018-01-01")}`. Así que, presta atención cuando quieras actualizar datos.
+
+Podemos hacer más cosas que modificar un determinado valor. Por ejemplo, `$inc` nos permite incrementar un número por una canitdad determinada:
+
+```{}
+db.ciudades.update(
+{nombre: "Madrid"},
+{$inc: {poblacion: 1000}}
+)
+```
+
+Se van añadiendo constantemente nuevos operadores, por lo que es aconsejable consultar la documentación para estar al día de los cambios. Algunos relevantes son:
+
+- [`$set`](https://docs.mongodb.com/manual/reference/operator/update/set/): cambia un campo con un valor dado.
+- [`$unset`](https://docs.mongodb.com/manual/reference/operator/update/unset/): elimina un campo.
+- [`$inc`](https://docs.mongodb.com/manual/reference/operator/update/inc/): incrementa un campo por un número dado.
+- [`$pop`](https://docs.mongodb.com/manual/reference/operator/update/pop/): eliman el último (o el primer) elemento de un array.
+
+
+<!-- ## Referencias -->
+
+<!-- Mongo no está preparado para hacer cruces (*joins*). Debico a la naturaleza distribuida de Mongo, los cruces son operaciones ineficientes. Aún así, en determinadas ocasiones puede ser útil referenciar algunos documentos entre sí. En estos casos, el equipo de desarrollo de Mongo sugiere usar un comando del estilo  -->
+
+
+## Eliminar datos
+
+Otra operación habitual es la de **eliminar documentos** de una colección. En Mongo esto se puede hacer simplemente reemplazando `find()` por `remove()` y todos los documentos que satisfagan la condición se eliminarán. 
+
+Antes de eliminar cualquier documento, es recomendable ejecutar `find()` para comprobar que el criterio está bien construido y hace lo que queremos que haga. 
+
+> **Ejercicio:** Elimina todos las ciudades en las que gobierne el PSOE.
+
 
 
 
