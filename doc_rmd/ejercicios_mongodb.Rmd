@@ -1,0 +1,103 @@
+---
+title: "MongoDB"
+subtitle: "MBADS (Octubre 2018)"
+author: "Pablo Hidalgo"
+date: "19/12/2018"
+output:
+  html_notebook:
+    code_folding: hide
+    number_sections: no
+    theme: journal
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+
+En esta práctica puedes practicar todo lo que hemos visto de MongoDB. Cualquier duda que tengas, puede ser útil tener a mano la [documentación de MongoDB](https://docs.mongodb.com/manual/).
+
+Vamos a comenzar insertando los siguientes documentos en una colección llamada `movies`:
+
+```{r}
+title : Fight Club
+writer : Chuck Palahniuk
+year : 1999
+actors : [
+  Brad Pitt
+  Edward Norton
+]
+```
+
+```{r}
+title : Pulp Fiction
+writer : Quentin Tarantino
+year : 1994
+actors : [
+  John Travolta
+  Uma Thurman
+]
+```
+
+```{r}
+title : Inglorious Basterds
+writer : Quentin Tarantino
+year : 2009
+actors : [
+  Brad Pitt
+  Diane Kruger
+  Eli Roth
+]
+```
+
+```{r}
+title : The Hobbit: An Unexpected Journey
+writer : J.R.R. Tolkein
+year : 2012
+franchise : The Hobbit
+```
+
+```{r}
+title : The Hobbit: The Desolation of Smaug
+writer : J.R.R. Tolkein
+year : 2013
+franchise : The Hobbit
+```
+
+```{r}
+title : The Hobbit: The Battle of the Five Armies
+writer : J.R.R. Tolkein
+year : 2012
+franchise : The Hobbit
+synopsis : Bilbo and Company are forced to engage in a war against an array of combatants and keep the Lonely Mountain from falling into the hands of a rising darkness.
+```
+
+
+```{r}
+title : Pee Wee Herman's Big Adventure
+```
+
+```{r}
+title : Avatar
+```
+
+
+# Encontrando documentos
+
+1. Devuelve todas las películas.
+2. Extrae todas las películas cuyo guionista es Quentin Tarantino.
+3. Extrae aquellas películas donde actúe Brad Pitt.
+4. Extrae aquellas películas rodadas en los años 90.
+5. Extrae aquellas películas rodadas antes del año 2000 o después del 2010.
+
+# Actualizando documentos
+
+1. Actualiza la sinposis de `The Hobbit: An Unexpected Journey` a `A reluctant hobbit, Bilbo Baggins, sets out to the Lonely Mountain with a spirited group of dwarves to reclaim their mountain home - and the gold within it - from the dragon Smaug.`
+
+2. Añade el actor `Samuel L. Jackson` a la película `Pulp Fiction`.
+
+
+# Eliminando documentos
+
+1. Elimina la película `Pee Wee Herman's Big Adventure`.
+2. Elimina la película `Avatar`.
