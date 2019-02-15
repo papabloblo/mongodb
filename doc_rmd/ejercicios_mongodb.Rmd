@@ -1,9 +1,8 @@
 ---
 title: "MongoDB"
-subtitle: "MBADS (Octubre 2018)"
 author: "Pablo Hidalgo"
-date: "19/12/2018"
 output:
+  pdf_document: default
   html_notebook:
     number_sections: no
     theme: journal

@@ -1,9 +1,8 @@
 ---
 title: "MongoDB"
-subtitle: "MBADS (Octubre 2018)"
 author: "Pablo Hidalgo"
-date: "18/12/2018"
-output: 
+output:
+  pdf_document: default
   html_document:
     theme: journal
 ---
@@ -12,12 +11,17 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+**MongoDB** es una de las bases de datos NoSQL más utilizada. Ya hemos visto en clase que se trata de una base de datos orientada a documentos.
+
+<!-- # Instalación -->
+
+<!-- La instalación para los sistemas operativos soportados está documentada en  -->
 
 # Primeros pasos
 
 Una vez que se ha completado la instalación, ya podemos empezar a divertirnos con MongoDB.
 
-> Asegúrate de que MongoDB está funcionando. Para ello, debes haber ejecutado en la línea de comandos `mongod` y tienes que haber obtenido `initandlisten] waiting for connections on port 27017`. Ten cuidado de no cerrar esta ventana ya que matarías la sesión de MongoDB.
+> Asegúrate de que MongoDB está funcionando. Para ello, debes haber ejecutado en la línea de comandos `mongod` y tienes que haber obtenido algo como `initandlisten] waiting for connections on port 27017`. Ten cuidado de no cerrar esta ventana ya que matarías la sesión de MongoDB.
 
 Abre una nueva ventana de la línea de comandos y escribe 
 
@@ -47,7 +51,7 @@ db.ciudades.insert({
 })
 ```
 
-Como dijimos durante la primera sesión, los documentos (recuerda, una colección está compuesta de documentos, algo similar a una fila o un registro en una base de datos relacional) siguen un formato al estilo JSON (estrictamente, se tratan de [BSON](https://en.wikipedia.org/wiki/BSON)) por lo que cualquier nuevo documento que añadamos debe seguir ese formato donde las llaves `{...}` denotan un objeto compuesto por parejas de atributo-valor y donde `[...]`  significa un array.
+Como hemos visto en clase, los documentos (recuerda, una colección está compuesta de documentos, algo similar a una fila o un registro en una base de datos relacional) siguen un formato al estilo JSON (estrictamente, se tratan de [BSON](https://en.wikipedia.org/wiki/BSON)) por lo que cualquier nuevo documento que añadamos debe seguir ese formato donde las llaves `{...}` denotan un objeto compuesto por parejas de atributo-valor y donde `[...]`  significa un array.
 
 Si te fijas en el documento que acabamos de insertar, uno de los valores es `monumentos` al que lo hemos declarado como un array cosa que, por construcción, no era posible hacer en una base de datos relacional ya que una de los principios es que una celda (la intersección entre una fila y una columna) solo podía contener un único valor. Eso nos podía llevar en algún caso a tener alguna información duplicada. Además, un propiedad relevante de los documentos es que se introduce de forma natural el concepto de jerarquía como puedes ver en el atributo `alcalde`.
 
@@ -64,11 +68,11 @@ SELECT *
   FROM ciudades;
 ```
 
-Como habrás observado, el documento contiene un campo `_id` que Mongo genera automáticamente y que se trata de un identificador único, aglo así como el datatype `SERIAL` en PostgreSQL. Este `_id` siempre tiene 12 bytes y está compuesto por un *timestamp*, un identificador de la máquina cliente, un identificador del proceso del cliente y un contador de 3-bytes incremental. 
+Como habrás observado, el documento contiene un campo `_id` que Mongo genera automáticamente y que se trata de un identificador único, algo así como el datatype `SERIAL` en PostgreSQL. Este `_id` siempre tiene 12 bytes y está compuesto por un *timestamp*, un identificador de la máquina cliente, un identificador del proceso del cliente y un contador de 3-bytes incremental. 
 
 Aunque pueda parecer que para nosotros, como usuarios, cómo se genere `_id` no es relevante, lo cierto es que esa forma de generarlo permite que cada máquina no tenga que conocer los identificadores que hayan generado otras siendo fundamental para poder lanzar procesos distribuidos (el *dataype* SERIAL de PostgreSQL necesita conocer el último generado para incremetnarlo en una unidad).
 
-> Cunado ejecutamos la función `find()` la consola muestra cada documento en una sola línea que hace difícil la visualización. Puedes añadir al final `.pretty` para obtener una vista más intuitiva. Pruébalo con `db.ciudades.find().pretty()`
+> Cuando ejecutamos la función `find()`, la consola muestra cada documento en una sola línea que hace difícil la visualización. Puedes añadir al final `.pretty` para obtener una vista más intuitiva. Pruébalo con `db.ciudades.find().pretty()`
 
 <!-- ## JavaScript -->
 
@@ -125,7 +129,7 @@ db.ciudades.count()
 Ya hemos visto que la función `find()` sin parámetros nos da todos los documentos. Para especificar un documento en concreto, tenemos que hacerlo de la siguiente forma
 
 ```{}
-db.ciudades.find({ciudad: "Madrid"})
+db.ciudades.find({nombre: "Madrid"})
 ```
 
 La función `find()` acepta un segundo parámetro opcional con el que especificar qué campos queremos obtener. Por ejemplo, si solo queremos la población de una ciudad (además del `_id`), podemos escribir:
@@ -140,7 +144,11 @@ Si queremos obtener todos los campos excepto la población, podemos hacerlo con:
 db.ciudades.find({nombre: "Madrid"}, {poblacion: false})
 ```
 
-Igual que en PostgreSQL, en Mongo podemos construir queries específicas que nos permitan encontrar aquellos que cumplan estén dentro de un rango, por ejemplo, o criterios más complejos. 
+> ¿Cómo harías para devolver los campos `poblacion`, `alcalde` de la ciudad de Madrid?
+
+> ¿Qué ocurre si escribimos `db.ciudades.find({nombre: "Madrid"}, {poblacion: false})`?
+
+Igual que en PostgreSQL, en Mongo podemos construir queries específicas que nos permitan encontrar aquellos documentos que cumplan algún requisito. 
 
 Por ejemplo, para encontrar aquellas ciudades cuya población es mayor que 1.000.000 debemos escribir:
 
@@ -148,7 +156,7 @@ Por ejemplo, para encontrar aquellas ciudades cuya población es mayor que 1.000
 db.ciudades.find({poblacion: {$gt: 1000000}})
 ```
 
-En Mongo, los operaradores condicionales se escribe como `{ $operador: valor}`.
+En Mongo, los operaradores condicionales se escribe como `{$operador: valor}`.
 
 [Aquí](https://docs.mongodb.com/manual/reference/operator/query/#query-selectors) se pueden consultar los operadores que existen en Mongo. Algunos habituales son:
 
@@ -160,6 +168,7 @@ En Mongo, los operaradores condicionales se escribe como `{ $operador: valor}`.
 - `$in`: valores en un **array** de valores.
 - `$ne`: Valores **distintos** a un valor especificado.
 
+
 ## Jerarquías de datos
 
 Mongo está muy bien preparado para trabajar con jerarquías de datos. Para filtrar *subdocumento*, hay que separar los campos anidados por puntos. Por ejemplo, para encontrar aquellas ciudades en las que el partido que gobierna es el PSOE, lo haríamos
@@ -170,7 +179,7 @@ db.ciudades.find(
 )
 ```
 
-## Operaciones booleanas
+## Operaciones `OR`
 
 Cuando utilizamos la función `find()` estamos utilizando implícitamente operaciones `and`, es decir, solo devuelve aquellos documentos que cumplan **todos** los criterios que hayamos especificado. Por ejemplo, la siguiente sentencia no devuelve ningún resultado ya que ningún documento satisface las dos condiciones **a la vez**:
 
@@ -196,6 +205,7 @@ db.ciudades.find(
 )
 ```
 
+> **Ejercicio:** encuentra aquellos documentos que hagan referencia a las ciudades de Madrid y Sevilla. ¿Sabrías hacerlo de dos formas distintas?
 
 
 ## Actualizando datos
