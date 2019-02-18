@@ -1717,70 +1717,43 @@ $(document).ready(function () {
 <!-- rnb-text-begin -->
 <p>En esta práctica puedes practicar todo lo que hemos visto de MongoDB. Cualquier duda que tengas, puede ser útil tener a mano la <a href="https://docs.mongodb.com/manual/">documentación de MongoDB</a>.</p>
 <p>Vamos a comenzar insertando los siguientes documentos en una colección llamada <code>movies</code>:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxudGl0bGUgOiBGaWdodCBDbHViXG53cml0ZXIgOiBDaHVjayBQYWxhaG5pdWtcbnllYXIgOiAxOTk5XG5hY3RvcnMgOiBbXG4gIEJyYWQgUGl0dFxuICBFZHdhcmQgTm9ydG9uXG5dXG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r title : Fight Club writer : Chuck Palahniuk year : 1999 actors : [ Brad Pitt Edward Norton]</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxudGl0bGUgOiBQdWxwIEZpY3Rpb25cbndyaXRlciA6IFF1ZW50aW4gVGFyYW50aW5vXG55ZWFyIDogMTk5NFxuYWN0b3JzIDogW1xuICBKb2huIFRyYXZvbHRhXG4gIFVtYSBUaHVybWFuXG5dXG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r title : Pulp Fiction writer : Quentin Tarantino year : 1994 actors : [ John Travolta Uma Thurman]</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxudGl0bGUgOiBJbmdsb3Jpb3VzIEJhc3RlcmRzXG53cml0ZXIgOiBRdWVudGluIFRhcmFudGlub1xueWVhciA6IDIwMDlcbmFjdG9ycyA6IFtcbiAgQnJhZCBQaXR0XG4gIERpYW5lIEtydWdlclxuICBFbGkgUm90aFxuXVxuYGBgXG5gYGAifQ== -->
-<p><code>r</code>r title : Inglorious Basterds writer : Quentin Tarantino year : 2009 actors : [ Brad Pitt Diane Kruger Eli Roth]</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxudGl0bGUgOiBUaGUgSG9iYml0OiBBbiBVbmV4cGVjdGVkIEpvdXJuZXlcbndyaXRlciA6IEouUi5SLiBUb2xrZWluXG55ZWFyIDogMjAxMlxuZnJhbmNoaXNlIDogVGhlIEhvYmJpdFxuYGBgXG5gYGAifQ== -->
-<p><code>r</code>r title : The Hobbit: An Unexpected Journey writer : J.R.R. Tolkein year : 2012 franchise : The Hobbit</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxudGl0bGUgOiBUaGUgSG9iYml0OiBUaGUgRGVzb2xhdGlvbiBvZiBTbWF1Z1xud3JpdGVyIDogSi5SLlIuIFRvbGtlaW5cbnllYXIgOiAyMDEzXG5mcmFuY2hpc2UgOiBUaGUgSG9iYml0XG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r title : The Hobbit: The Desolation of Smaug writer : J.R.R. Tolkein year : 2013 franchise : The Hobbit</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxudGl0bGUgOiBUaGUgSG9iYml0OiBUaGUgQmF0dGxlIG9mIHRoZSBGaXZlIEFybWllc1xud3JpdGVyIDogSi5SLlIuIFRvbGtlaW5cbnllYXIgOiAyMDEyXG5mcmFuY2hpc2UgOiBUaGUgSG9iYml0XG5zeW5vcHNpcyA6IEJpbGJvIGFuZCBDb21wYW55IGFyZSBmb3JjZWQgdG8gZW5nYWdlIGluIGEgd2FyIGFnYWluc3QgYW4gYXJyYXkgb2YgY29tYmF0YW50cyBhbmQga2VlcCB0aGUgTG9uZWx5IE1vdW50YWluIGZyb20gZmFsbGluZyBpbnRvIHRoZSBoYW5kcyBvZiBhIHJpc2luZyBkYXJrbmVzcy5cbmBgYFxuYGBgIn0= -->
-<p><code>r</code>r title : The Hobbit: The Battle of the Five Armies writer : J.R.R. Tolkein year : 2012 franchise : The Hobbit synopsis : Bilbo and Company are forced to engage in a war against an array of combatants and keep the Lonely Mountain from falling into the hands of a rising darkness.</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxudGl0bGUgOiBQZWUgV2VlIEhlcm1hbidzIEJpZyBBZHZlbnR1cmVcbmBgYFxuYGBgIn0= -->
-<p><code>r</code>r title : Pee Wee Herman’s Big Adventure</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxudGl0bGUgOiBBdmF0YXJcbmBgYFxuYGBgIn0= -->
-<p><code>r</code>r title : Avatar</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
+<pre><code>title : &quot;Fight Club&quot;,
+writer : &quot;Chuck Palahniuk&quot;,
+year : 1999,
+actors : [
+  &quot;Brad Pitt&quot;,
+  &quot;Edward Norton&quot;
+]</code></pre>
+<pre><code>title : &quot;Pulp Fiction&quot;,
+writer : &quot;Quentin Tarantino&quot;,
+year : 1994,
+actors : [
+  &quot;John Travolta&quot;,
+  &quot;Uma Thurman&quot;
+]</code></pre>
+<pre><code>title : &quot;Inglorious Basterds&quot;,
+writer : &quot;Quentin Tarantino&quot;,
+year : 2009,
+actors : [
+  &quot;Brad Pitt&quot;,
+  &quot;Diane Kruger&quot;,
+  &quot;Eli Roth&quot;
+]</code></pre>
+<pre><code>title : &quot;The Hobbit: An Unexpected Journey&quot;,
+writer : &quot;J.R.R. Tolkein&quot;,
+year : 2012,
+franchise : &quot;The Hobbit&quot;</code></pre>
+<pre><code>title : &quot;The Hobbit: The Desolation of Smaug&quot;,
+writer : &quot;J.R.R. Tolkein&quot;,
+year : 2013,
+franchise : &quot;The Hobbit&quot;</code></pre>
+<pre><code>title : &quot;The Hobbit: The Battle of the Five Armies&quot;,
+writer : &quot;J.R.R. Tolkein&quot;,
+year : 2012,
+franchise : &quot;The Hobbit&quot;,
+synopsis : &quot;Bilbo and Company are forced to engage in a war against an array of combatants and keep the Lonely Mountain from falling into the hands of a rising darkness.&quot;</code></pre>
+<pre><code>title : &quot;Pee Wee Herman's Big Adventure&quot;</code></pre>
+<pre><code>title : &quot;Avatar&quot;</code></pre>
 <div id="encontrando-documentos" class="section level1">
 <h1>Encontrando documentos</h1>
 <ol style="list-style-type: decimal">
@@ -1807,7 +1780,7 @@ $(document).ready(function () {
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiTW9uZ29EQiIKYXV0aG9yOiAiUGFibG8gSGlkYWxnbyIKb3V0cHV0OgogIHBkZl9kb2N1bWVudDogZGVmYXVsdAogIGh0bWxfbm90ZWJvb2s6CiAgICBudW1iZXJfc2VjdGlvbnM6IG5vCiAgICB0aGVtZTogam91cm5hbAotLS0KCmBgYHtyIHNldHVwLCBpbmNsdWRlPUZBTFNFfQprbml0cjo6b3B0c19jaHVuayRzZXQoZWNobyA9IFRSVUUsIGV2YWwgPSBGQUxTRSkKYGBgCgoKRW4gZXN0YSBwcsOhY3RpY2EgcHVlZGVzIHByYWN0aWNhciB0b2RvIGxvIHF1ZSBoZW1vcyB2aXN0byBkZSBNb25nb0RCLiBDdWFscXVpZXIgZHVkYSBxdWUgdGVuZ2FzLCBwdWVkZSBzZXIgw7p0aWwgdGVuZXIgYSBtYW5vIGxhIFtkb2N1bWVudGFjacOzbiBkZSBNb25nb0RCXShodHRwczovL2RvY3MubW9uZ29kYi5jb20vbWFudWFsLykuCgpWYW1vcyBhIGNvbWVuemFyIGluc2VydGFuZG8gbG9zIHNpZ3VpZW50ZXMgZG9jdW1lbnRvcyBlbiB1bmEgY29sZWNjacOzbiBsbGFtYWRhIGBtb3ZpZXNgOgoKYGBge3J9CnRpdGxlIDogRmlnaHQgQ2x1Ygp3cml0ZXIgOiBDaHVjayBQYWxhaG5pdWsKeWVhciA6IDE5OTkKYWN0b3JzIDogWwogIEJyYWQgUGl0dAogIEVkd2FyZCBOb3J0b24KXQpgYGAKCmBgYHtyfQp0aXRsZSA6IFB1bHAgRmljdGlvbgp3cml0ZXIgOiBRdWVudGluIFRhcmFudGlubwp5ZWFyIDogMTk5NAphY3RvcnMgOiBbCiAgSm9obiBUcmF2b2x0YQogIFVtYSBUaHVybWFuCl0KYGBgCgpgYGB7cn0KdGl0bGUgOiBJbmdsb3Jpb3VzIEJhc3RlcmRzCndyaXRlciA6IFF1ZW50aW4gVGFyYW50aW5vCnllYXIgOiAyMDA5CmFjdG9ycyA6IFsKICBCcmFkIFBpdHQKICBEaWFuZSBLcnVnZXIKICBFbGkgUm90aApdCmBgYAoKYGBge3J9CnRpdGxlIDogVGhlIEhvYmJpdDogQW4gVW5leHBlY3RlZCBKb3VybmV5CndyaXRlciA6IEouUi5SLiBUb2xrZWluCnllYXIgOiAyMDEyCmZyYW5jaGlzZSA6IFRoZSBIb2JiaXQKYGBgCgpgYGB7cn0KdGl0bGUgOiBUaGUgSG9iYml0OiBUaGUgRGVzb2xhdGlvbiBvZiBTbWF1Zwp3cml0ZXIgOiBKLlIuUi4gVG9sa2Vpbgp5ZWFyIDogMjAxMwpmcmFuY2hpc2UgOiBUaGUgSG9iYml0CmBgYAoKYGBge3J9CnRpdGxlIDogVGhlIEhvYmJpdDogVGhlIEJhdHRsZSBvZiB0aGUgRml2ZSBBcm1pZXMKd3JpdGVyIDogSi5SLlIuIFRvbGtlaW4KeWVhciA6IDIwMTIKZnJhbmNoaXNlIDogVGhlIEhvYmJpdApzeW5vcHNpcyA6IEJpbGJvIGFuZCBDb21wYW55IGFyZSBmb3JjZWQgdG8gZW5nYWdlIGluIGEgd2FyIGFnYWluc3QgYW4gYXJyYXkgb2YgY29tYmF0YW50cyBhbmQga2VlcCB0aGUgTG9uZWx5IE1vdW50YWluIGZyb20gZmFsbGluZyBpbnRvIHRoZSBoYW5kcyBvZiBhIHJpc2luZyBkYXJrbmVzcy4KYGBgCgoKYGBge3J9CnRpdGxlIDogUGVlIFdlZSBIZXJtYW4ncyBCaWcgQWR2ZW50dXJlCmBgYAoKYGBge3J9CnRpdGxlIDogQXZhdGFyCmBgYAoKCiMgRW5jb250cmFuZG8gZG9jdW1lbnRvcwoKMS4gRGV2dWVsdmUgdG9kYXMgbGFzIHBlbMOtY3VsYXMuCjIuIEV4dHJhZSB0b2RhcyBsYXMgcGVsw61jdWxhcyBjdXlvIGd1aW9uaXN0YSBlcyBRdWVudGluIFRhcmFudGluby4KMy4gRXh0cmFlIGFxdWVsbGFzIHBlbMOtY3VsYXMgZG9uZGUgYWN0w7plIEJyYWQgUGl0dC4KNC4gRXh0cmFlIGFxdWVsbGFzIHBlbMOtY3VsYXMgcm9kYWRhcyBlbiBsb3MgYcOxb3MgOTAuCjUuIEV4dHJhZSBhcXVlbGxhcyBwZWzDrWN1bGFzIHJvZGFkYXMgYW50ZXMgZGVsIGHDsW8gMjAwMCBvIGRlc3B1w6lzIGRlbCAyMDEwLgoKIyBBY3R1YWxpemFuZG8gZG9jdW1lbnRvcwoKMS4gQWN0dWFsaXphIGxhIHNpbnBvc2lzIGRlIGBUaGUgSG9iYml0OiBBbiBVbmV4cGVjdGVkIEpvdXJuZXlgIGEgYEEgcmVsdWN0YW50IGhvYmJpdCwgQmlsYm8gQmFnZ2lucywgc2V0cyBvdXQgdG8gdGhlIExvbmVseSBNb3VudGFpbiB3aXRoIGEgc3Bpcml0ZWQgZ3JvdXAgb2YgZHdhcnZlcyB0byByZWNsYWltIHRoZWlyIG1vdW50YWluIGhvbWUgLSBhbmQgdGhlIGdvbGQgd2l0aGluIGl0IC0gZnJvbSB0aGUgZHJhZ29uIFNtYXVnLmAKCjIuIEHDsWFkZSBlbCBhY3RvciBgU2FtdWVsIEwuIEphY2tzb25gIGEgbGEgcGVsw61jdWxhIGBQdWxwIEZpY3Rpb25gLgoKCiMgRWxpbWluYW5kbyBkb2N1bWVudG9zCgoxLiBFbGltaW5hIGxhIHBlbMOtY3VsYSBgUGVlIFdlZSBIZXJtYW4ncyBCaWcgQWR2ZW50dXJlYC4KMi4gRWxpbWluYSBsYSBwZWzDrWN1bGEgYEF2YXRhcmAu</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiTW9uZ29EQiIKYXV0aG9yOiAiUGFibG8gSGlkYWxnbyIKb3V0cHV0OgogIHBkZl9kb2N1bWVudDogZGVmYXVsdAogIGh0bWxfbm90ZWJvb2s6CiAgICBudW1iZXJfc2VjdGlvbnM6IG5vCiAgICB0aGVtZTogam91cm5hbAotLS0KCmBgYHtyIHNldHVwLCBpbmNsdWRlPUZBTFNFfQprbml0cjo6b3B0c19jaHVuayRzZXQoZWNobyA9IFRSVUUsIGV2YWwgPSBGQUxTRSkKYGBgCgoKRW4gZXN0YSBwcsOhY3RpY2EgcHVlZGVzIHByYWN0aWNhciB0b2RvIGxvIHF1ZSBoZW1vcyB2aXN0byBkZSBNb25nb0RCLiBDdWFscXVpZXIgZHVkYSBxdWUgdGVuZ2FzLCBwdWVkZSBzZXIgw7p0aWwgdGVuZXIgYSBtYW5vIGxhIFtkb2N1bWVudGFjacOzbiBkZSBNb25nb0RCXShodHRwczovL2RvY3MubW9uZ29kYi5jb20vbWFudWFsLykuCgpWYW1vcyBhIGNvbWVuemFyIGluc2VydGFuZG8gbG9zIHNpZ3VpZW50ZXMgZG9jdW1lbnRvcyBlbiB1bmEgY29sZWNjacOzbiBsbGFtYWRhIGBtb3ZpZXNgOgoKYGBge30KdGl0bGUgOiAiRmlnaHQgQ2x1YiIsCndyaXRlciA6ICJDaHVjayBQYWxhaG5pdWsiLAp5ZWFyIDogMTk5OSwKYWN0b3JzIDogWwogICJCcmFkIFBpdHQiLAogICJFZHdhcmQgTm9ydG9uIgpdCmBgYAoKYGBge30KdGl0bGUgOiAiUHVscCBGaWN0aW9uIiwKd3JpdGVyIDogIlF1ZW50aW4gVGFyYW50aW5vIiwKeWVhciA6IDE5OTQsCmFjdG9ycyA6IFsKICAiSm9obiBUcmF2b2x0YSIsCiAgIlVtYSBUaHVybWFuIgpdCmBgYAoKYGBge30KdGl0bGUgOiAiSW5nbG9yaW91cyBCYXN0ZXJkcyIsCndyaXRlciA6ICJRdWVudGluIFRhcmFudGlubyIsCnllYXIgOiAyMDA5LAphY3RvcnMgOiBbCiAgIkJyYWQgUGl0dCIsCiAgIkRpYW5lIEtydWdlciIsCiAgIkVsaSBSb3RoIgpdCmBgYAoKYGBge30KdGl0bGUgOiAiVGhlIEhvYmJpdDogQW4gVW5leHBlY3RlZCBKb3VybmV5IiwKd3JpdGVyIDogIkouUi5SLiBUb2xrZWluIiwKeWVhciA6IDIwMTIsCmZyYW5jaGlzZSA6ICJUaGUgSG9iYml0IgpgYGAKCmBgYHt9CnRpdGxlIDogIlRoZSBIb2JiaXQ6IFRoZSBEZXNvbGF0aW9uIG9mIFNtYXVnIiwKd3JpdGVyIDogIkouUi5SLiBUb2xrZWluIiwKeWVhciA6IDIwMTMsCmZyYW5jaGlzZSA6ICJUaGUgSG9iYml0IgpgYGAKCmBgYHt9CnRpdGxlIDogIlRoZSBIb2JiaXQ6IFRoZSBCYXR0bGUgb2YgdGhlIEZpdmUgQXJtaWVzIiwKd3JpdGVyIDogIkouUi5SLiBUb2xrZWluIiwKeWVhciA6IDIwMTIsCmZyYW5jaGlzZSA6ICJUaGUgSG9iYml0IiwKc3lub3BzaXMgOiAiQmlsYm8gYW5kIENvbXBhbnkgYXJlIGZvcmNlZCB0byBlbmdhZ2UgaW4gYSB3YXIgYWdhaW5zdCBhbiBhcnJheSBvZiBjb21iYXRhbnRzIGFuZCBrZWVwIHRoZSBMb25lbHkgTW91bnRhaW4gZnJvbSBmYWxsaW5nIGludG8gdGhlIGhhbmRzIG9mIGEgcmlzaW5nIGRhcmtuZXNzLiIKYGBgCgoKYGBge30KdGl0bGUgOiAiUGVlIFdlZSBIZXJtYW4ncyBCaWcgQWR2ZW50dXJlIgpgYGAKCmBgYHt9CnRpdGxlIDogIkF2YXRhciIKYGBgCgoKIyBFbmNvbnRyYW5kbyBkb2N1bWVudG9zCgoxLiBEZXZ1ZWx2ZSB0b2RhcyBsYXMgcGVsw61jdWxhcy4KMi4gRXh0cmFlIHRvZGFzIGxhcyBwZWzDrWN1bGFzIGN1eW8gZ3Vpb25pc3RhIGVzIFF1ZW50aW4gVGFyYW50aW5vLgozLiBFeHRyYWUgYXF1ZWxsYXMgcGVsw61jdWxhcyBkb25kZSBhY3TDumUgQnJhZCBQaXR0Lgo0LiBFeHRyYWUgYXF1ZWxsYXMgcGVsw61jdWxhcyByb2RhZGFzIGVuIGxvcyBhw7FvcyA5MC4KNS4gRXh0cmFlIGFxdWVsbGFzIHBlbMOtY3VsYXMgcm9kYWRhcyBhbnRlcyBkZWwgYcOxbyAyMDAwIG8gZGVzcHXDqXMgZGVsIDIwMTAuCgojIEFjdHVhbGl6YW5kbyBkb2N1bWVudG9zCgoxLiBBY3R1YWxpemEgbGEgc2lucG9zaXMgZGUgYFRoZSBIb2JiaXQ6IEFuIFVuZXhwZWN0ZWQgSm91cm5leWAgYSBgQSByZWx1Y3RhbnQgaG9iYml0LCBCaWxibyBCYWdnaW5zLCBzZXRzIG91dCB0byB0aGUgTG9uZWx5IE1vdW50YWluIHdpdGggYSBzcGlyaXRlZCBncm91cCBvZiBkd2FydmVzIHRvIHJlY2xhaW0gdGhlaXIgbW91bnRhaW4gaG9tZSAtIGFuZCB0aGUgZ29sZCB3aXRoaW4gaXQgLSBmcm9tIHRoZSBkcmFnb24gU21hdWcuYAoKMi4gQcOxYWRlIGVsIGFjdG9yIGBTYW11ZWwgTC4gSmFja3NvbmAgYSBsYSBwZWzDrWN1bGEgYFB1bHAgRmljdGlvbmAuCgoKIyBFbGltaW5hbmRvIGRvY3VtZW50b3MKCjEuIEVsaW1pbmEgbGEgcGVsw61jdWxhIGBQZWUgV2VlIEhlcm1hbidzIEJpZyBBZHZlbnR1cmVgLgoyLiBFbGltaW5hIGxhIHBlbMOtY3VsYSBgQXZhdGFyYC4=</div>
 
 
 

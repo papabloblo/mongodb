@@ -2,9 +2,9 @@
 title: "MongoDB"
 author: "Pablo Hidalgo"
 output:
-  pdf_document: default
   html_document:
     theme: journal
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -205,7 +205,7 @@ db.ciudades.find(
 )
 ```
 
-> **Ejercicio:** encuentra aquellos documentos que hagan referencia a las ciudades de Madrid y Sevilla. ¿Sabrías hacerlo de dos formas distintas?
+> **Ejercicio:** encuentra aquellos documentos que hagan referencia a las ciudades de Madrid o Sevilla. ¿Sabrías hacerlo de dos formas distintas?
 
 
 ## Actualizando datos
