@@ -1,7 +1,6 @@
 ---
 title: "Práctica avanzada con MongoDB"
-author: "papabloblo"
-date: "18/2/2019"
+author: "Pablo Hidalgo"
 output: html_document
 ---
 
@@ -227,7 +226,7 @@ Una cosa que podemos ver en los tres primeros documentos es el **código postal*
 { "_id" : ObjectId("5c085aaf2f384324b8a10971"), "zip_code" : "" }
 ```
 
-En muchos documentos, el campo `zip_code` sin informar. Como cada documento puede tener una estructura distinta, vamos a hacer que desaparezca este campos en aquellos documentos en los que esté sin informar.
+En muchos documentos, el campo `zip_code` está sin informar. Como cada documento puede tener una estructura distinta, vamos a hacer que desaparezca este campo en aquellos documentos en los que esté sin informar.
 
 El operador [`$unset`](https://docs.mongodb.com/manual/reference/operator/update/unset/) elimina un campo en particular. Así, podemos hacer `db.usage.update({zip_code: ""}, {$unset: {zip_code: ""}})`. Si volvemos a ejecutar `db.usage.find({}, {zip_code: 1})`, obtenemos
 
@@ -282,7 +281,7 @@ El operador [`$unset`](https://docs.mongodb.com/manual/reference/operator/update
 Al haber eliminado el campo `zip_code` de algunos documentos, si ejecutamos `db.usage.find({zip_code: ""})` no obtendremos ningún resultado. Para extraer aquellos documentos que tengan o no tengan un determinado campo, podemos utilizar el operador [`$exists](https://docs.mongodb.com/manual/reference/operator/query/exists/)
 
 ```{}
-b.usage.find({zip_code: {$exists: 0}}).pretty()
+db.usage.find({zip_code: {$exists: 0}}).pretty()
 ```
 
 
@@ -292,7 +291,7 @@ Una operación habitual en cualquier base de datos es la de **agregar** datos. L
 
 ![](https://docs.mongodb.com/manual/_images/aggregation-pipeline.bakedsvg.svg)
 
-El *aggregation pipeline* de MongoDB consiste en *stages*. Cada *stage* transforma los documentos como si pasasen por el *pipeline*. El *stage pipeline* no es necesartio que produzca un *output* para cada documento de *input*.
+El *aggregation pipeline* de MongoDB consiste en *stages*. Cada *stage* transforma los documentos como si pasasen por el *pipeline*. El *stage pipeline* no es necesario que produzca un *output* para cada documento de *input*.
 
 Vamos a empezar calculando **cuántos viajes de producen para cada estación de origen (campo `ipunplug_base`)**. En código SQL, haríamos 
 
@@ -308,7 +307,7 @@ En MongoDB necesitamos el *aggregation pipeline stage* `$group`. La estructura d
 { $group: { _id: <expression>, <field1>: { <accumulator1> : <expression1> }, ... } }
 ```
 
-El campo `_id` es **obligatorio**. Para referirnos a un campo del documento, haremos "$idunplug_base". Para hacer el conteo, deberemos recurrir al operador suma `$sum$. La sentencia sería
+El campo `_id` es **obligatorio**. Para referirnos a un campo del documento, haremos `$idunplug_base`. Para hacer el conteo, deberemos recurrir al operador suma `$sum`. La sentencia sería
 
 
 ```{}
@@ -660,36 +659,36 @@ db.usage.aggregate([
 ```
 
 
-Operador `$elemMatch`. Enlace: https://docs.mongodb.com/manual/reference/operator/projection/elemMatch/#proj._S_elemMatch
-Extraer estación `Segovia 26`
+<!-- Operador `$elemMatch`. Enlace: https://docs.mongodb.com/manual/reference/operator/projection/elemMatch/#proj._S_elemMatch -->
+<!-- Extraer estación `Segovia 26` -->
 
-```{}
-db.stations.find({ "_id" : "2018-12-01T19:30:41.882124" },
-                          {stations: {$elemMatch: {name: "Segovia 26"}}}).pretty()
-```
-
-
-```{}
-db.stations.aggregate({$group: {_id: "$stations.name", avg_free_bases: {$avg: "$stations.free_bases"}}})
-```
-
-```{}
-db.stations.aggregate({$limit: 1}, {$unwind: "$stations"}).pretty()
-```
+<!-- ```{} -->
+<!-- db.stations.find({ "_id" : "2018-12-01T19:30:41.882124" }, -->
+<!--                           {stations: {$elemMatch: {name: "Segovia 26"}}}).pretty() -->
+<!-- ``` -->
 
 
+<!-- ```{} -->
+<!-- db.stations.aggregate({$group: {_id: "$stations.name", avg_free_bases: {$avg: "$stations.free_bases"}}}) -->
+<!-- ``` -->
 
-```{}
-db.stations.aggregate({$limit: 1}, {$unwind: "$stations"}, {$group: {_id: "$stations.name", avg_free_bases: {$avg: "$stations.free_bases"}}}).pretty()
-```
+<!-- ```{} -->
+<!-- db.stations.aggregate({$limit: 1}, {$unwind: "$stations"}).pretty() -->
+<!-- ``` -->
 
 
-```{}
-db.stations.find({ "_id" : "2018-11-01T00:05:32.277622" },
-                          {stations: {$elemMatch: {name: {$in: ["Segovia 26", "Serrano 210"]}}}}).pretty()
-```
 
-```{}
-db.stations.find({},{"_id": true, "stations.name":1, stations: {$elemMatch: {name: "Segovia 26"}}}).pretty()
-```
+<!-- ```{} -->
+<!-- db.stations.aggregate({$limit: 1}, {$unwind: "$stations"}, {$group: {_id: "$stations.name", avg_free_bases: {$avg: "$stations.free_bases"}}}).pretty() -->
+<!-- ``` -->
+
+
+<!-- ```{} -->
+<!-- db.stations.find({ "_id" : "2018-11-01T00:05:32.277622" }, -->
+<!--                           {stations: {$elemMatch: {name: {$in: ["Segovia 26", "Serrano 210"]}}}}).pretty() -->
+<!-- ``` -->
+
+<!-- ```{} -->
+<!-- db.stations.find({},{"_id": true, "stations.name":1, stations: {$elemMatch: {name: "Segovia 26"}}}).pretty() -->
+<!-- ``` -->
 
