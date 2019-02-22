@@ -1,0 +1,58 @@
+---
+title: "Práctica taller MongoDB"
+author: "Pablo Hidalgo"
+date: "21/2/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Entre las dos sesiones hemos visto cómo utilizar MongoDB para trabajar contra una base de datos. Durante la primera sesión hicimos un *tour* rápido por alguno de los comandos más sencillos. Durante la segunda sesión hicimos consultas más complicadas sobre el conjunto de colecciones.
+
+Para esta práctica vamos a continuar con las dos colecciones `usage` y `stations` importadas en la última sesión.
+
+> **Pregunta 1:** extrae aquellos documentos de la colección `usage` que tengan el campo `track`.
+
+> **Pregunta 2:** El campo `track` contiene la información de los puntos en los que el viaje ha sido trazado. Para aquellos documentos que tienen en campo `track`, calcula el número de elementos del *subcampo* `features` de track.
+
+> **Pregunta 3:** En `track.features` hay un array de documentos con `geometry.time`. ¿Todos los documentos con campo `track` tienen `track.features.geometry.time` con valor "Point"?
+
+> **Pregunta 4:** ¿Cuál es el tiempo de viaje máximo (`travel_time`), mínimo y medio que ha tardado en recorrer un usuario que partía de la estación 14?
+
+> **Pregunta 5:** Calcula la media de `travel_time` para cada día del mes. El resultado debe estar ordenado desde el día 1 del mes hasta el último.
+
+> **Pregunta 6:** ¿Sabrías decir cuántas estaciones están situadas en la calle Segovia?
+
+> **Pregunta 7:** El campo `_id` está almacenado como una cadena de caracteres (*string*). Convierte el campo para que aparezca como una fecha, es decir, del estilo `ISODate("2018-12-01T00:30:12.524Z")`.
+
+> **Pregunta 8:** ¿Cuál fue la estación o estaciones que más bases libres (`free_bases`) tuvieron el día 8 de diciembre?
+
+> **Pregunta 9:** Calcula el tiempo medio de viaje entre cada par de estaciones
+
+> **Pregunta 10:** Genera un nueva colección denominada `stations2` que contenga un documento para cada estación y cada documento un array `states` con el par `{timestamp, free_bases}`. El resultado debería ser algo similar a
+
+```{}
+{
+	"_id" : 136,
+	"states" : [
+		{
+			"timestamp" : ISODate("2018-12-01T00:30:12.524Z"),
+			"free_bases" : 19
+		},
+		{
+			"timestamp" : ISODate("2018-12-01T01:30:12.684Z"),
+			"free_bases" : 9
+		},
+		{
+			"timestamp" : ISODate("2018-12-01T03:30:15.860Z"),
+			"free_bases" : 0
+		},
+		{<más documentos>...}
+	]
+}
+
+```
+

@@ -564,7 +564,7 @@ Una forma de resolverlo sería llegar a tener **un documento por cada instante t
 db.stations.aggregate({$unwind: "$stations"}, {$limit: 5}).pretty()
 ```
 
-> **Ejercicio:** Calcula le media de las bases libres para cada estación usando el stage `$wind`.
+> **Ejercicio:** Calcula le media de las bases libres para cada estación usando el stage `$unwind`.
 
 # Índices
 
@@ -641,6 +641,23 @@ db.usage.aggregate(
 ).pretty()
 ```
 
+
+# Creación de nuevas colecciones
+
+Podemos crear una nueva colección a partir del resultado de `aggregate()`. Para ello tenemos que utilizar el *stage* `$out`:
+
+```{}
+db.usage.aggregate([
+  {
+    $group: 
+    {
+      _id: {month: { $month: "$unplug_hourTime"}, day: { $dayOfMonth: "$unplug_hourTime"}},
+      cuenta: {$sum: 1}
+    }
+  },
+  {$out: "usage_month_day"}
+])
+```
 
 
 Operador `$elemMatch`. Enlace: https://docs.mongodb.com/manual/reference/operator/projection/elemMatch/#proj._S_elemMatch

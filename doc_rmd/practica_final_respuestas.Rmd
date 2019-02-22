@@ -1,0 +1,125 @@
+---
+title: "Respuestas práctica"
+author: "Pablo Hidalgo"
+date: "21/2/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Pregunta 1
+
+```{}
+db.usage.find({track: {$exists: 1}}).limit(3).pretty()
+```
+
+# Pregunta 2
+
+```{}
+db.usage.aggregate(
+  {$match: {"track": {$exists: 1}}}, 
+  {$project: {tracks: {$size: "$track.features"}}}
+)
+```
+
+
+# Pregunta 3
+
+```{}
+db.usage.aggregate(   
+  {$match: {"track": {$exists: 1}}},
+  {$replaceRoot: {newRoot: "$track"}},
+  {$unwind: "$features"},
+  {$project: {type: "$features.geometry.type"}},
+  {$group: {_id: "$type", num: {$sum: 1}}}
+)
+```
+
+
+# Pregunta 4
+
+```{}
+db.usage.aggregate({$match: {idunplug_base: 14}}, {$group: {_id: "$idunplug_base", tiempo_max: {$max: "$travel_time"}, tiempo_min: {$min: "$travel_time"}, tiempo_avg: {$avg: "$travel_time"}}})
+```
+
+# Pregunta 5
+
+```{}
+db.usage.aggregate(
+  {$group: {_id: {$dayOfMonth: "$unplug_hourTime"}, travel_time_avg: {$avg: "$travel_time"}}},
+  {$sort: {_id: 1}}
+)
+```
+
+# Pregunta 6
+
+```{}
+db.stations.aggregate(
+  {$limit: 1},
+  {$unwind: "$stations"},
+  {$match: {"stations.address": {$regex: /Calle Segovia/}}}
+).pretty()
+```
+
+# Pregunta 7
+
+```{}
+db.stations.aggregate(
+  {$limit: 1}, 
+  {$project: {_id: {$dateFromString: {dateString: "$_id"}}}}
+)
+```
+
+
+# Pregunta 8
+
+```{}
+db.stations.aggregate(
+  {$addFields: {day: {$dayOfMonth: {$dateFromString: {dateString: "$_id"}}}}},
+  {$match: {day: 8}},
+  {$unwind: "$stations"},
+  {$group: {_id: "$stations.free_bases", stations: {$push: "$stations.id"}}},
+  {$sort: {_id: -1}},
+  {$limit: 1}
+)
+```
+
+# Pregunta 9
+
+```{}
+db.usage.aggregate(
+  {$group: {
+    _id: {idunplug_base: "$idunplug_base", idplug_base: "$idplug_base"},
+    avg_travel_time: {$avg: "$travel_time"}
+    }
+  }
+)
+```
+
+# Pregunta 10
+
+```{}
+db.stations.aggregate(
+  {$unwind: "$stations"},
+  {$group: 
+    {
+      _id: "$stations.id",
+      states: {$push:
+                {
+                  timestamp: {$dateFromString: {dateString: "$_id"}},
+                  free_bases: "$stations.free_bases"
+                }
+              }
+    }
+  },
+  {$out: "stations2"}
+)
+```
+
+
+```{}
+db.stations2.aggregate({$project: {_id:1, states: {$slice: ["$states", 3]}}}, {$limit: 2}).pretty()
+```
+
