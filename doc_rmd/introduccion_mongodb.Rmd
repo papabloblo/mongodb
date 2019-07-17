@@ -13,47 +13,74 @@ knitr::opts_chunk$set(echo = TRUE)
 
 **MongoDB** es una de las bases de datos NoSQL más utilizada. Ya hemos visto en clase que se trata de una base de datos orientada a documentos.
 
-<!-- # Instalación -->
+# Instalación
 
-<!-- La instalación para los sistemas operativos soportados está documentada en  -->
+> La instalación para los sistemas operativos soportados está documentada [aquí](https://docs.mongodb.com/manual/installation/).
+
+## Instalación en Windows
+
+> En la url https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/ puedes consultar los pasos a seguir.
+
+Primero debemos [descargar el instalador](https://www.mongodb.com/download-center/community) adecuado a nuestro sistema. 
+
+
+## Instalación en MacOS
+
+
+
 
 # Primeros pasos
 
-Una vez que se ha completado la instalación, ya podemos empezar a divertirnos con MongoDB.
+Una vez que se ha completado la instalación, ya podemos empezar a *divertirnos* con MongoDB.
 
 > Asegúrate de que MongoDB está funcionando. Para ello, debes haber ejecutado en la línea de comandos `mongod` y tienes que haber obtenido algo como `initandlisten] waiting for connections on port 27017`. Ten cuidado de no cerrar esta ventana ya que matarías la sesión de MongoDB.
 
 Abre una nueva ventana de la línea de comandos y escribe 
 
 ```{}
-mongo mbads
+mongo master
 ```
 
-Esta sentencia genera una conexión al *motor* de MongoDB y crea una base de datos `mbads` en el caso de que no exista previamente.
+Esta sentencia genera una conexión al *motor* de MongoDB y crea una base de datos `master` en el caso de que no exista previamente.
 
 
 Escribe `help` para ver qué sentencias puedes utilizar.
 
-Como nos hemos conectado a MongoDB con la sentencia `mongo mbads` estamos en la base de datos `mbads`. Podemos ver qué otras bases de datos tenemos disponibles escribiendo `show dbs` y cambiar a otra base de datos escribiendo `use nombre_bbdd`.
+Como nos hemos conectado a MongoDB con la sentencia `mongo master` estamos en la base de datos `master`. Podemos ver qué otras bases de datos tenemos disponibles escribiendo `show dbs` y cambiar a otra base de datos escribiendo `use nombre_bbdd`.
 
-Ahora mismo nuestra base de datos está vacía; tenemos que empezar a rellenarla con datos. Para crear una colección (recuerda la nomenclatura en Mongo y piensa en que las colecciones son análogas a las tablas en un base de datos relacional) es tan fácil como empezar a añadir registros, ya que no es necesario crear una estructura (ni un esquema) simplemente hay que empezar a usarla. Además, si te diste cuenta antes, cuando ejecutamos `show dbs` no aparecía por ningún lado nuestra base de datos `mbads` ya que ésta no existe propiamente hasta que no comienza a tener valores. Parar crear una colección `ciudades` tenemos que **insertar** un valor con ayuda del comando `db.nombre_coleccion.insert()`:
+**Ahora mismo nuestra base de datos está vacía; tenemos que empezar a rellenarla con datos.** Para crear una colección (recuerda la nomenclatura en Mongo y piensa en que las colecciones son análogas a las tablas en un base de datos relacional) es tan fácil como empezar a añadir registros, ya que no es necesario crear una estructura (ni un esquema) simplemente hay que empezar a usarla. Además, si te diste cuenta antes, cuando ejecutamos `show dbs` no aparecía por ningún lado nuestra base de datos `master` ya que ésta no existe propiamente hasta que no comienza a tener valores. Para crear una colección `compras` tenemos que **insertar** un valor con ayuda del comando `db.compras.insert()`:
+
+<!-- ```{} -->
+<!-- db.ciudades.insert({ -->
+<!--   nombre: "Madrid", -->
+<!--   poblacion: 3182175, -->
+<!--   ultimo_censo: ISODate("2017-01-01"), -->
+<!--   monumentos: ["Cibeles", "Puerta de Alcalá"], -->
+<!--   alcalde: { -->
+<!--     nombre: "Manuela Carmena", -->
+<!--     partido: "Ahora Madrid" -->
+<!--   } -->
+<!-- }) -->
+<!-- ``` -->
 
 ```{}
-db.ciudades.insert({
-  nombre: "Madrid",
-  poblacion: 3182175,
-  ultimo_censo: ISODate("2017-01-01"),
-  monumentos: ["Cibeles", "Puerta de Alcalá"],
-  alcalde: {
-    nombre: "Manuela Carmena",
-    partido: "Ahora Madrid"
+db.compras.insert({
+  nombre: "Pablo Hidalgo",
+  dni: 12345,
+  fecha_nacimiento: ISODate("1991-02-09"),
+  edad: 28,
+  articulos: [150, 756, 312],
+  direccion: {
+    calle: "Príncipe de Vergara",
+    numero: 43,
+    ciudad: "Madrid"
   }
 })
 ```
 
 Como hemos visto en clase, los documentos (recuerda, una colección está compuesta de documentos, algo similar a una fila o un registro en una base de datos relacional) siguen un formato al estilo JSON (estrictamente, se tratan de [BSON](https://en.wikipedia.org/wiki/BSON)) por lo que cualquier nuevo documento que añadamos debe seguir ese formato donde las llaves `{...}` denotan un objeto compuesto por parejas de atributo-valor y donde `[...]`  significa un array.
 
-Si te fijas en el documento que acabamos de insertar, uno de los valores es `monumentos` al que lo hemos declarado como un array cosa que, por construcción, no era posible hacer en una base de datos relacional ya que una de los principios es que una celda (la intersección entre una fila y una columna) solo podía contener un único valor. Eso nos podía llevar en algún caso a tener alguna información duplicada. Además, un propiedad relevante de los documentos es que se introduce de forma natural el concepto de jerarquía como puedes ver en el atributo `alcalde`.
+Si te fijas en el documento que acabamos de insertar, uno de los valores es `articulos` al que lo hemos declarado como un *array* cosa que, por construcción, no era posible hacer en una base de datos relacional ya que uno de los principios es que una celda (la intersección entre una fila y una columna) solo podía contener un único valor. Eso nos podía llevar en algún caso a tener alguna información duplicada. Además, un propiedad relevante de los documentos es que se introduce de forma natural el concepto de jerarquía como puedes ver en el atributo `direccion`.
 
 
 Ahora podemos verificar que existe nuestra base de datos con `show dbs` y ver la colección con `show collections`. Podemos listar el contenido de una colección con `find()`:
@@ -70,7 +97,7 @@ SELECT *
 
 Como habrás observado, el documento contiene un campo `_id` que Mongo genera automáticamente y que se trata de un identificador único, algo así como el datatype `SERIAL` en PostgreSQL. Este `_id` siempre tiene 12 bytes y está compuesto por un *timestamp*, un identificador de la máquina cliente, un identificador del proceso del cliente y un contador de 3-bytes incremental. 
 
-Aunque pueda parecer que para nosotros, como usuarios, cómo se genere `_id` no es relevante, lo cierto es que esa forma de generarlo permite que cada máquina no tenga que conocer los identificadores que hayan generado otras siendo fundamental para poder lanzar procesos distribuidos (el *dataype* SERIAL de PostgreSQL necesita conocer el último generado para incremetnarlo en una unidad).
+Aunque pueda parecer que para nosotros, como usuarios, cómo se genere `_id` no es relevante, lo cierto es que esa forma de generarlo permite que cada máquina no tenga que conocer los identificadores que hayan generado otras siendo fundamental para poder lanzar procesos distribuidos (el *dataype* SERIAL de PostgreSQL necesita conocer el último generado para incrementarlo en una unidad).
 
 > Cuando ejecutamos la función `find()`, la consola muestra cada documento en una sola línea que hace difícil la visualización. Puedes añadir al final `.pretty` para obtener una vista más intuitiva. Pruébalo con `db.ciudades.find().pretty()`
 
@@ -79,40 +106,80 @@ Aunque pueda parecer que para nosotros, como usuarios, cómo se genere `_id` no 
 <!-- La lengua en la que mejor habla Mongo es **JavaScript**. -->
 
 Por completar nuestra colección, vamos a añadir algún documento más. Para añadir varios documentos a la vez en una colección, utilizamos `[...]`:
-
+<!-- ```{} -->
+<!-- db.ciudades.insert( -->
+<!--   [ -->
+<!--     { -->
+<!--       nombre: "Barcelona", -->
+<!--       poblacion: 1620809, -->
+<!--       ultimo_censo: ISODate("2017-01-01"), -->
+<!--       monumentos: ["Sagrada Familia", "Pedrera"], -->
+<!--       alcalde: { -->
+<!--         nombre: "Ada Colau", -->
+<!--         partido: "Barcelona en Comú" -->
+<!--       } -->
+<!--     }, -->
+<!--     { -->
+<!--       nombre: "Sevilla", -->
+<!--       poblacion: 689434, -->
+<!--       ultimo_censo: ISODate("2017-01-01"), -->
+<!--       monumentos: ["Giralda", "Torre del Oro"], -->
+<!--       alcalde: { -->
+<!--         nombre: "Juan Espadas", -->
+<!--         partido: "PSOE" -->
+<!--       } -->
+<!--     }, -->
+<!--     { -->
+<!--       nombre: "Oviedo", -->
+<!--       poblacion: 220301, -->
+<!--       ultimo_censo: ISODate("2017-01-01"), -->
+<!--       monumentos: ["Giralda", "Torre del Oro"], -->
+<!--       alcalde: { -->
+<!--         nombre: "Wenceslao López", -->
+<!--         partido: "PSOE" -->
+<!--       } -->
+<!--     } -->
+<!--   ] -->
+<!-- ) -->
+<!-- ``` -->
 ```{}
-db.ciudades.insert(
+db.compras.insert(
   [
     {
-      nombre: "Barcelona",
-      poblacion: 1620809,
-      ultimo_censo: ISODate("2017-01-01"),
-      monumentos: ["Sagrada Familia", "Pedrera"],
-      alcalde: {
-        nombre: "Ada Colau",
-        partido: "Barcelona en Comú"
-      }
-    },
-    {
-      nombre: "Sevilla",
-      poblacion: 689434,
-      ultimo_censo: ISODate("2017-01-01"),
-      monumentos: ["Giralda", "Torre del Oro"],
-      alcalde: {
-        nombre: "Juan Espadas",
-        partido: "PSOE"
-      }
-    },
-    {
-      nombre: "Oviedo",
-      poblacion: 220301,
-      ultimo_censo: ISODate("2017-01-01"),
-      monumentos: ["Giralda", "Torre del Oro"],
-      alcalde: {
-        nombre: "Wenceslao López",
-        partido: "PSOE"
-      }
+    nombre: "Andrea Pérez",
+    dni: 54321,
+    fecha_nacimiento: ISODate("1985-03-12"),
+    edad: 34,
+    articulos: [715, 1],
+    direccion: {
+      calle: "Alcalá",
+      numero: 69,
+      ciudad: "Madrid"
     }
+  },
+  {
+    nombre: "Juan García",
+    dni: 11111,
+    fecha_nacimiento: ISODate("1975-10-01"),
+    edad: 44,
+    articulos: [635, 4441],
+    direccion: {
+      calle: "Cervantes",
+      numero: 3,
+      ciudad: "Alcorcón"
+    }
+  },
+  {
+    nombre: "Nerea Álvarez",
+    dni: 22222,
+    fecha_nacimiento: ISODate("1995-06-29"),
+    edad: 24,
+    direccion: {
+      calle: "Nueva",
+      numero: 1,
+      ciudad: "Alcobendas"
+    }
+  },
   ]
 )
 ```
@@ -121,39 +188,42 @@ db.ciudades.insert(
 Una función que puede resultar útil es saber cuándos documentos existen dentro de una colección. Esto lo podemos hacer con la función `count()`:
 
 ```{}
-db.ciudades.count()
+db.compras.count()
 ```
 
 # Leyendo datos
 
-Ya hemos visto que la función `find()` sin parámetros nos da todos los documentos. Para especificar un documento en concreto, tenemos que hacerlo de la siguiente forma
+Ya hemos visto que la función `find()` sin parámetros nos da todos los documentos. Para especificar unos criterios de búsqueda, tenemos que hacerlo de la siguiente forma
 
 ```{}
-db.ciudades.find({nombre: "Madrid"})
+db.compras.find({dni: 12345})
 ```
 
-La función `find()` acepta un segundo parámetro opcional con el que especificar qué campos queremos obtener. Por ejemplo, si solo queremos la población de una ciudad (además del `_id`), podemos escribir:
+La función `find()` acepta un segundo parámetro opcional con el que especificar qué campos queremos obtener. Por ejemplo, si solo queremos el nombre (además del `_id`), podemos escribir:
 
 ```{}
-db.ciudades.find({nombre: "Madrid"}, {poblacion: true})
+db.compras.find({dni: 12345}, {nombre: true})
 ```
 
-Si queremos obtener todos los campos excepto la población, podemos hacerlo con:
+Si queremos obtener todos los campos excepto el nombre, podemos hacerlo con:
 
 ```{}
-db.ciudades.find({nombre: "Madrid"}, {poblacion: false})
+db.compras.find({dni: 12345}, {nombre: false})
 ```
 
-> ¿Cómo harías para devolver los campos `poblacion`, `alcalde` de la ciudad de Madrid?
+> ¿Cómo harías para devolver los campos `nombre` y `fecha_nacimiento` del registro con DNI 12345?
 
-> ¿Qué ocurre si escribimos `db.ciudades.find({nombre: "Madrid"}, {poblacion: false})`?
+```{collapse=TRUE}
+db.compras.find({dni: 12345}, {nombre: true, fecha_nacimiento: true})
+```
+
 
 Igual que en PostgreSQL, en Mongo podemos construir queries específicas que nos permitan encontrar aquellos documentos que cumplan algún requisito. 
 
-Por ejemplo, para encontrar aquellas ciudades cuya población es mayor que 1.000.000 debemos escribir:
+Por ejemplo, para encontrar aquellos clientes mayores de 30 años debemos escribir:
 
 ```{}
-db.ciudades.find({poblacion: {$gt: 1000000}})
+db.compras.find({edad: {$gt: 30}})
 ```
 
 En Mongo, los operaradores condicionales se escribe como `{$operador: valor}`.
@@ -168,14 +238,15 @@ En Mongo, los operaradores condicionales se escribe como `{$operador: valor}`.
 - `$in`: valores en un **array** de valores.
 - `$ne`: Valores **distintos** a un valor especificado.
 
+> Encuentra aquellos clientes cuya edad sea menor o igual que 34 años.
 
 ## Jerarquías de datos
 
-Mongo está muy bien preparado para trabajar con jerarquías de datos. Para filtrar *subdocumento*, hay que separar los campos anidados por puntos. Por ejemplo, para encontrar aquellas ciudades en las que el partido que gobierna es el PSOE, lo haríamos
+Mongo está muy bien preparado para trabajar con jerarquías de datos. Para filtrar *subdocumentos*, hay que separar los campos anidados por puntos. Por ejemplo, para encontrar aquellos clientes que viven en Madrid, lo haríamos
 
 ```{}
-db.ciudades.find(
-  {"alcalde.partido" : "PSOE"}
+db.compras.find(
+  {"direccion.ciudad" : "Madrid"}
 )
 ```
 
@@ -184,10 +255,10 @@ db.ciudades.find(
 Cuando utilizamos la función `find()` estamos utilizando implícitamente operaciones `and`, es decir, solo devuelve aquellos documentos que cumplan **todos** los criterios que hayamos especificado. Por ejemplo, la siguiente sentencia no devuelve ningún resultado ya que ningún documento satisface las dos condiciones **a la vez**:
 
 ```{}
-db.ciudades.find(
+db.compras.find(
   {
-    "nombre": "Sevilla",
-    "alcalde.nombre": "Manuela Carmena"
+    "edad": 24,
+    "direccion.ciudad": "Madrid"
   }
 )
 ```
@@ -195,48 +266,80 @@ db.ciudades.find(
 Sin embargo, si queremos obtener aquellos registros que satisfacen *alguna* de las condiciones, necesitamos utilizar el operador `or`:
 
 ```{}
-db.ciudades.find(
+db.compras.find(
   {
     $or: [
-      {"nombre": "Sevilla"},
-      {"alcalde.nombre": "Manuela Carmena"}
+      {"edad": 24},
+      {"direccion.ciudad": "Madrid"}
     ]
   }
 )
 ```
 
-> **Ejercicio:** encuentra aquellos documentos que hagan referencia a las ciudades de Madrid o Sevilla. ¿Sabrías hacerlo de dos formas distintas?
+> **Ejercicio:** encuentra aquellos clientes que vivan en Madrid o en Alcobendas. ¿Sabrías hacerlo de **dos** formas distintas?
+
+```{collapse=TRUE}
+db.compras.find(
+  {
+    $or: [
+      {"direccion.ciudad": "Madrid"},
+      {"direccion.ciudad": "Alcobendas"}
+    ]
+  }
+)
+
+db.compras.find({"direccion.ciudad": {$in: ["Madrid", "Alcobendas"]}})
+```
 
 
 ## Actualizando datos
 
 Hasta ahora hemos añadido nuevos documentos a una colección. Otra tarea que querremos saber hacer es **cómo actualizar documentos ya existentes**. Para ello utilizamos la función `update(criterio, operacion)`. El primero de los parámetros, `criterio`, es el mismo tipo de objeto que se le pasa a la función `find()`; el segundo parámetro, `operacion`, es un objeto cuyos campos reemplazarán a aquellos documentos que concuerden con lo escrito en `criterio`.
 
-Por ejemplo, si quisiésemos actualizar la población de Madrid, tendríamos que
+Por ejemplo, si quisiésemos actualizar el DNI y la fecha de nacimiento de un cliente, tendríamos que
 
 ```{}
-db.ciudades.update(
-  {nombre: "Madrid"},
-  {$set : {poblacion: 4000000, ultimo_censo: ISODate("2018-01-01")}}
+db.compras.update(
+  {nombre: "Pablo Hidalgo"},
+  {$set : {dni: 11345, fecha_nacimiento: ISODate("1991-02-10")}}
 )
 ```
 
 Quizá te preguntes si es necesaria escribir `$set`. Si en vez de la sentencia anterior escribiésemos
+
 ```{}
-db.ciudades.update(
-  {nombre: "Madrid"},
-  {poblacion: 4000000, ultimo_censo: ISODate("2018-01-01")}
+db.compras.update(
+  {nombre: "Pablo Hidalgo"},
+  {dni: 11345, fecha_nacimiento: ISODate("1991-02-10")}
 )
 ```
 
-Mongo entendería que lo que quieres es **reeemplazar por completo** aquellos el documento de la ciudad de Madrid por `{poblacion: 4000000, ultimo_censo: ISODate("2018-01-01")}`. Así que, presta atención cuando quieras actualizar datos.
+Mongo entendería que lo que quieres es **reeemplazar por completo** el documento. Así que, presta atención cuando quieras actualizar datos.
 
-Podemos hacer más cosas que modificar un determinado valor. Por ejemplo, `$inc` nos permite incrementar un número por una canitdad determinada:
+> Si has ejecutado la última sentencia, puedes volver al estado original ejecutando 
+`db.compras.update(
+  {dni: 11345},
+ {
+  nombre: "Pablo Hidalgo",
+  dni: 12345,
+  fecha_nacimiento: ISODate("1991-02-09"),
+  edad: 28,
+  articulos: [150, 756, 312],
+  direccion: {
+    calle: "Príncipe de Vergara",
+    numero: 43,
+    ciudad: "Madrid"
+  }
+})`
+
+
+
+Podemos hacer más cosas que modificar un determinado valor. Por ejemplo, `$inc` nos permite incrementar un número por una cantidad determinada:
 
 ```{}
-db.ciudades.update(
-{nombre: "Madrid"},
-{$inc: {poblacion: 1000}}
+db.compras.update(
+{dni: 11345},
+{$inc: {edad: 1}}
 )
 ```
 
@@ -247,6 +350,18 @@ Se van añadiendo constantemente nuevos operadores, por lo que es aconsejable co
 - [`$inc`](https://docs.mongodb.com/manual/reference/operator/update/inc/): incrementa un campo por un número dado.
 - [`$pop`](https://docs.mongodb.com/manual/reference/operator/update/pop/): eliman el último (o el primer) elemento de un array.
 - [`$push`](https://docs.mongodb.com/manual/reference/operator/update/push/): añade un elemento a un array.
+
+
+> **Ejercicio:** El cliente con DNI 11111 ha comprado el artículo 1. Actualiza la base de datos para reflejar esta compra.
+
+```{}
+db.compras.update(
+  {dni: 11111},
+  {
+    $push: {articulos: 1}
+  }
+)
+```
 
 
 <!-- ## Referencias -->
@@ -260,7 +375,7 @@ Otra operación habitual es la de **eliminar documentos** de una colección. En 
 
 Antes de eliminar cualquier documento, es recomendable ejecutar `find()` para comprobar que el criterio está bien construido y hace lo que queremos que haga. 
 
-> **Ejercicio:** Elimina todos las ciudades en las que gobierne el PSOE.
+> **Ejercicio:** Elimina todos los clientes que vivan en Madrid.
 
 
 ## Eliminar una colección y una base de datos
@@ -273,7 +388,7 @@ Para eliminar una colección utilizamos `drop()`. Para comprobar su funcionamien
 show collections
 ```
 
-Para eliminar la colección `ciudades` podemos ejecutar
+Para eliminar la colección `compras` podemos ejecutar
 
 ```{}
 db.ciudades.drop()
@@ -285,7 +400,12 @@ Para eliminar una base de datos completa, necesitamos utilizar `dropDatabase()`.
 ```{}
 show dbs
 ```
+y no situamos en aquella que queramos borar (por ejemplo, `use master`).
 
+Y, **para borrar la base de datos que estemos usando**, escribimos:
+```{}
+db.dropDatabase()
+```
 
 
 
