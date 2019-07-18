@@ -1,5 +1,6 @@
 ---
 title: "Práctica avanzada con MongoDB"
+subtitle: "Taller de NoSQL"
 author: "Pablo Hidalgo"
 output: html_document
 ---
@@ -8,17 +9,19 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-En la primera sesión vimos un repaso de las operaciones CRUD básicas para trabajar con MongoDB. En esta práctica vamos ir un poco más allá y hacer operaciones más complejas con MongoDB.
+En la **primera sesión** vimos un repaso de las **operaciones CRUD básicas para trabajar con MongoDB**. En esta práctica vamos ir un poco más allá y hacer operaciones más complejas con MongoDB.
 
 # Los datos
 
 Hasta ahora hemos creado una colección de forma *manual* a través del comando `insert()`. En esta práctica vamos a trabajar de una forma algo más *real*, importando un conjunto de documentos (ya sabes, las colecciones están compuestas de documentos) con *más gracia*.
 
-Vamos a utilizar datos que el ayuntamiento de Madrid tiene en su portal de datos abiertos. En particular, vamos a trabajar con los datos en este [enlace](https://opendata.emtmadrid.es/Datos-estaticos/Datos-generales-(1)) que se corresponden con el uso del servicio de bicicletas eléctricas de ayuntamiento de Madrid: **BiciMAD**.
+Vamos a utilizar datos que el ayuntamiento de Madrid tiene en su portal de datos abiertos. En particular, vamos a trabajar con los datos en este [enlace](https://opendata.emtmadrid.es/Datos-estaticos/Datos-generales-(1)) en el que se puede encontrar datos del uso del servicio de bicicletas eléctricas de ayuntamiento de Madrid **BiciMAD**.
 
-En la web aparecen dos conjuntos de datos, los que se llaman `Datos de uso de ...` contienen la traza de todos los movimientos que se han producido. Es decir, información de cada vez que un usuario ha cogido una bici en una estación y la ha dejado en otra.
+En la web aparecen dos conjuntos de datos, los que se llaman `Datos de uso de ...` contienen la traza de todos los movimientos que se han producido. Es decir, información de cada vez que un usuario ha cogido una bicicleta en una estación y la ha dejado en otra.
 
-Los que se denominan `Situación estaciones bicimad por día y hora de ...` recogen información de cada estación en diversos instantes temporales.
+Los que se denominan `Situación estaciones bicimad por día y hora de ...` recogen información de en qué estado se encuentra cada estación en diversos instantes temporales.
+
+> **Nota:** en esta práctica se han usado los conjuntos de datos `201812_Usage_Bicimad.json` y `Bicimad_Stations_201812.json`. Si utilizas otros, los resultados que obtengas serán ligeramente distintos.
 
 ```{}
 {
@@ -44,9 +47,9 @@ Los que se denominan `Situación estaciones bicimad por día y hora de ...` reco
 
 ```
 
-# Dónde guardar los datos
+# Dónde guardar los datos *(opcional)*
 
-MongoDB es una base de datos y, como tal, tiene que guardar los datos físicamente en el disco duro. Podemos *levantar* el servicio de MongoDB eligiendo **dónde se van a almacenar los datos.
+MongoDB es una base de datos y, como tal, tiene que guardar los datos físicamente en el disco duro. Podemos *levantar* el servicio de MongoDB eligiendo **dónde se van a almacenar los datos**.
 
 Para ello, primero creamos una nueva carpeta donde queremos que se guarden los datos. En una distribución Linux o Mac, para crear una nueva carpeta, lo podemos hacer con el comando `mkdir` (la opción `-p` significa que creará las carpetas intermedias necesarias)
 
@@ -73,7 +76,7 @@ En Windows:
 "C:\Program Files\MongoDB\Server\4.0\bin\mongod.exe" --dbpath="ruta"
 ```
 
-Esto habrá lanzado el *motor* de MongoDB. Si queremos entrar en la *shell* de MongoDB, abrimos una nueva ventana de la terminal y escribimos `mongo`.
+Esto habrá lanzado el *motor* de MongoDB. Si queremos entrar en la *shell* de MongoDB, abrimos una nueva ventana de la terminal y escribimos `mongo` o ejecutamos `C:\Program Files\MongoDB\Server\4.0\bin\mongod.exe`.
 
 
 # Importar los datos
@@ -92,11 +95,12 @@ Si ahora entramos en la shell de mongo mediante el comando `mongo` y escribimos 
 Cambiamos la base de datos con `use bicimad` y escribiendo `show collections` veremos la colección `usage`.
 
 # Datos de uso
+
 ## Manipulando los datos
 
 Para ver la magnitud de la colección, es conveniente hacer `db.usage.count()` de donde obtendremos 273.272 colecciones.
 
-Después, vamos a intentar entender la estructura de los documentos. Si ejecutamos `db.usage.findOne()` obtendremos el primer documento para una inspección rápida.
+Vamos a intentar entender la estructura de los documentos. Si ejecutamos `db.usage.findOne()` obtendremos el primer documento para una inspección rápida.
 
 ```{}
 {
@@ -112,7 +116,6 @@ Después, vamos a intentar entender la estructura de los documentos. Si ejecutam
 	"unplug_hourTime" : ISODate("2018-11-30T23:00:00Z"),
 	"zip_code" : ""
 }
-
 ```
 
 Si ejecutamos `db.usage.find().limit(3).pretty()` para acceder a los tres primeros documentos, tenemos que el tercero de ellos tiene la siguiente estructura
@@ -199,9 +202,9 @@ Si ejecutamos `db.usage.find().limit(3).pretty()` para acceder a los tres primer
 
 ```
 
-Como ya sabemos, MongoDB es una base de datos *schemaless* y que permite que cada documento de una colección pueda tener una estructura ligeramente distinta. En este último documento tenemos el campo `track` que no aparecía en los dos documentos anteriores. 
+Como ya sabemos, MongoDB es una base de datos *schemaless* y que ++permite que cada documento de una colección pueda tener una estructura ligeramente distinta**. En este último documento tenemos el campo `track` que no aparecía en los dos documentos anteriores. 
 
-Una cosa que podemos ver en los tres primeros documentos es el **código postal**. Para extraer solamente el código postal de las colecciones, podemos hacer con `db.usage.find({}, {zip_code: 1})` de donde obtendremos:
+Una cosa que sí comparten los tres primeros documentos es el **código postal**. Para extraer solamente el código postal de las colecciones, podemos hacer con `db.usage.find({}, {zip_code: 1})` de donde obtendremos:
 
 ```{}
 { "_id" : ObjectId("5c085aae2f384324b8a10925"), "zip_code" : "" }
@@ -226,7 +229,7 @@ Una cosa que podemos ver en los tres primeros documentos es el **código postal*
 { "_id" : ObjectId("5c085aaf2f384324b8a10971"), "zip_code" : "" }
 ```
 
-En muchos documentos, el campo `zip_code` está sin informar. Como cada documento puede tener una estructura distinta, vamos a hacer que desaparezca este campo en aquellos documentos en los que esté sin informar.
+En muchos documentos, el campo `zip_code` está sin informar. Como cada documento puede tener una estructura distinta, vamos a hacer que desaparezca este campo en aquellos documentos en los que esté sin informar y así optimizar el espacio en disco.
 
 El operador [`$unset`](https://docs.mongodb.com/manual/reference/operator/update/unset/) elimina un campo en particular. Así, podemos hacer `db.usage.update({zip_code: ""}, {$unset: {zip_code: ""}})`. Si volvemos a ejecutar `db.usage.find({}, {zip_code: 1})`, obtenemos
 
@@ -287,13 +290,11 @@ db.usage.find({zip_code: {$exists: 0}}).pretty()
 
 ## Agregación
 
-Una operación habitual en cualquier base de datos es la de **agregar** datos. Los operadores de agregación agrupan valores de múltiples documentos juntos y pueden realizar opreaciones para devolver un único resultado. Tenemos el *aggregation pipeline* para hacer agregaciones
-
-![](https://docs.mongodb.com/manual/_images/aggregation-pipeline.bakedsvg.svg)
+Una operación habitual en cualquier base de datos es la de **agregar** datos. Los operadores de agregación agrupan valores de múltiples documentos juntos y pueden realizar operaciones para devolver un único resultado. Tenemos el *aggregation pipeline* para hacer agregaciones. [Aquí](https://docs.mongodb.com/manual/core/aggregation-pipeline/) hay un pequeño vídeo explicativo.
 
 El *aggregation pipeline* de MongoDB consiste en *stages*. Cada *stage* transforma los documentos como si pasasen por el *pipeline*. El *stage pipeline* no es necesario que produzca un *output* para cada documento de *input*.
 
-Vamos a empezar calculando **cuántos viajes de producen para cada estación de origen (campo `ipunplug_base`)**. En código SQL, haríamos 
+Vamos a empezar calculando **cuántos viajes de producen para cada estación de origen (campo `idunplug_station`)**. En código SQL, haríamos 
 
 ```{}
 SELECT COUNT(*) AS count
@@ -307,15 +308,15 @@ En MongoDB necesitamos el *aggregation pipeline stage* `$group`. La estructura d
 { $group: { _id: <expression>, <field1>: { <accumulator1> : <expression1> }, ... } }
 ```
 
-El campo `_id` es **obligatorio**. Para referirnos a un campo del documento, haremos `$idunplug_base`. Para hacer el conteo, deberemos recurrir al operador suma `$sum`. La sentencia sería
+El campo `_id` es **obligatorio**. Para referirnos a un campo del documento, haremos `$idunplug_station`. Para hacer el conteo, deberemos recurrir al operador suma `$sum`. La sentencia sería
 
 
 ```{}
 db.usage.aggregate([
   {
     $group: {
-      _id: "$idunplug_base",
-      count:{ $sum: 1 }
+      _id: "$idunplug_station",
+      count: { $sum: 1 }
       }
   }
 ])
@@ -329,7 +330,7 @@ De forma parecida, podemos calcular el tiempo medio de uso (campo `travel_time`)
 db.usage.aggregate([
   {
     $group: {
-      _id: "$idunplug_base",
+      _id: "$idunplug_station",
       avg_travel_time:{ $avg: "$travel_time" }
       }
   }
@@ -344,19 +345,25 @@ Podemos usar `$group` también para devolver los valores únicos. Por ejemplo, p
 db.usage.aggregate([
   {
     $group: {
-      _id: "$idunplug_base"
+      _id: "$idunplug_station"
       }
   }
 ])
 ```
 
-Cuando agregamos datos estamos tratando de resumir la información. Tal y como hemos usado hasta ahora `$group` nos devuelve el resultado en un orden indeterminado. Si queremos ordenar los documentos obtenidos, tenemos que utilizar el *stage* [`$sort`](https://docs.mongodb.com/manual/reference/operator/aggregation/sort/)
+Cuando agregamos datos estamos tratando de resumir la información. Tal y como hemos usado hasta ahora `$group` nos devuelve el resultado en un orden indeterminado. Si queremos ordenar los documentos obtenidos, tenemos que utilizar el *stage* [`$sort`](https://docs.mongodb.com/manual/reference/operator/aggregation/sort/). La estructura es 
+
+```{}
+{ $sort: { <field1>: <sort order>, <field2>: <sort order> ... } }
+```
+
+donde `<sort order>` toma valor 1 para especificar un orden ascendente y -1 descendente.
 
 ```{}
 db.usage.aggregate([
   {
     $group: {
-      _id: "$idunplug_base",
+      _id: "$idunplug_station",
       count:{ $sum: 1 }
       }
   },
@@ -369,10 +376,10 @@ Por último, `$match` puede ser útil para filtrar primero los documentos de los
 
 ```{}
 db.usage.aggregate([
-  { $match: {idunplug_base: {$in: [1, 3, 5] }}},
+  { $match: {idunplug_station: {$in: [1, 3, 5] }}},
   {
     $group: {
-      _id: "$idunplug_base",
+      _id: "$idunplug_station",
       count:{ $sum: 1 }
       }
   },
@@ -384,7 +391,7 @@ db.usage.aggregate([
 
 Como en cualquier base de datos, el modelo, es decir, la estructura que tenga los datos, será relevante para que unas operaciones sean más fáciles de realizar que otras.
 
-Por ejemplo, si nuestor interés principal es el de analizar el tiempo de viaje en función de las estaciones de partida, sería interesante tener una estructura como
+Por ejemplo, si nuestro interés principal es el de analizar el tiempo de viaje en función de las estaciones de partida, sería interesante tener una estructura como
 
 ```{}
 { "_id" : 24, "travel_time" : [ 1010, 852, 1027 ] }
@@ -417,7 +424,7 @@ db.usage.aggregate([
   {$limit: 100},
   {
   $group:{
-    _id: "$idunplug_base",
+    _id: "$idunplug_station",
     travel_time: { $push: "$travel_time"}
   }
   }
@@ -471,7 +478,7 @@ db.usage.aggregate([
 ```
 
 
-> **Ejercicio:** utilizando la última sentencia, haz que el resultado esté ordenado primero por día del mes y luego por mes.
+> **Ejercicio:** utilizando la última sentencia, haz que el resultado esté ordenado primero por mes y luego por día del mes.
 
 # Datos de situación de las estaciones
 
@@ -489,11 +496,11 @@ Object.keys(db.stations.findOne())
 
 Como vemos, tiene dos campos: `_id` y `stations`. 
 
-> **Ejercicio:** ¿De cuántos documentos está compuesto el campo `stations` del primer documento?
+> **Ejercicio:** ¿De cuántos documentos está compuesto el campo `stations` del primer documento? Pista: utiliza `$size`.
 
 ## Trabajando con arrays
 
-Para seguir haciéndonos la idea de la estructura de la colección, vamos a quedarnos con solamente los tres primeros elementos del campo `stations`. Para ello, tenemos el operador [`$slice`](https://docs.mongodb.com/manual/reference/operator/aggregation/slice/) que devuelve parte de un array. La siguiente sintaxis devuelve los `<n>` primer elementos del `<array>` (si `<n>` es negativo, devuelvo los `<n>` últimos elementos). 
+Para seguir haciéndonos la idea de la estructura de la colección, vamos a quedarnos con solamente los tres primeros elementos del campo `stations`. Para ello, tenemos el operador [`$slice`](https://docs.mongodb.com/manual/reference/operator/aggregation/slice/) que devuelve parte de un array. La siguiente sintaxis devuelve los `<n>` primer elementos del `<array>` (si `<n>` es negativo, devuelve los `<n>` últimos elementos). 
 
 ```{}
 { $slice: [ <array>, <n> ] }
@@ -502,8 +509,10 @@ Para seguir haciéndonos la idea de la estructura de la colección, vamos a qued
 La operación que queremos sería 
 
 ```{}
-db.stations.findOne({},
-                  {stations: {$slice: ["$stations", 3]}})
+db.stations.aggregate(
+  {$limit: 1},
+  {$project:{stations: {$slice: ["$stations", 3]}}}
+  )
 ```
 
 > **Ejercicio:** revisando la documentación de `$slice`. ¿Cómo devolverías los documentos del 15 al 18?
@@ -563,29 +572,29 @@ Una forma de resolverlo sería llegar a tener **un documento por cada instante t
 db.stations.aggregate({$unwind: "$stations"}, {$limit: 5}).pretty()
 ```
 
-> **Ejercicio:** Calcula le media de las bases libres para cada estación usando el stage `$unwind`.
+> **Ejercicio:** Calcula la media de las bases libres para cada estación usando el stage `$unwind`.
 
 # Índices
 
 Cuando vimos las bases de datos relacionales hablamos de la importancia de los índices para hacer consultas de forma eficiente. En MongoDB también podemos utilizar índices.
 
-MongoDB crea un índice único en el campo `_id` durante la creación de una colección. Para crear un índice utilizamos `createIndex()`.
+MongoDB crea un índice único en el campo `_id` durante la creación de una colección. Para crear un índice utilizamos [`createIndex()`](https://docs.mongodb.com/manual/reference/method/db.collection.createIndex/).
 
 ```{}
 db.stations.createIndex({"stations.name": 1})
 ```
 
-Para eliminar un índice, podemos usar `$dropIndex()`.
+Para eliminar un índice, podemos usar [`dropIndex()`](https://docs.mongodb.com/manual/reference/method/db.collection.dropIndex/).
 
 # Vistas
 
-En las bases de datos relacionales existía el concepto de vista. Las vistas son consultas almacenadas (solo la información de cómo hacer la consulta, no los datos en sí mismo) que, de cara al usuario, actuan como si fuese una tabla física. En MongoDB podemos crear vistas de colecciones con [`createView()`](https://docs.mongodb.com/manual/reference/method/db.createView/) cuya sintaxis es
+En las bases de datos relacionales existía el concepto de vista. Las vistas son consultas almacenadas (solo la información de cómo hacer la consulta, no los datos en sí mismos) que, de cara al usuario, actuan como si fuese una tabla física. En MongoDB podemos crear vistas de colecciones con [`createView()`](https://docs.mongodb.com/manual/reference/method/db.createView/) cuya sintaxis es
 
 ```{}
 db.createView(<view>, <source>, <pipeline>, <options>)
 ```
 
-Donde `<view>` es el nombre que le queremos dar a la vista entre comillas, `<soruce>` el nombre de la colección de la que queremos crear una vista y `<pipeline>` un *array* tal y como lo usaríamos en un *aggregation pipeline*.
+Donde `<view>` es el nombre que le queremos dar a la vista entre comillas, `<source>` el nombre de la colección de la que queremos crear una vista y `<pipeline>` un *array* tal y como lo usaríamos en un *aggregation pipeline*.
 
 
 ```{}
