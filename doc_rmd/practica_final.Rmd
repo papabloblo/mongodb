@@ -1,8 +1,9 @@
 ---
 title: "Práctica taller MongoDB"
 author: "Pablo Hidalgo"
-date: "21/2/2019"
-output: html_document
+subtitle: Taller de NoSQL
+output:
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}

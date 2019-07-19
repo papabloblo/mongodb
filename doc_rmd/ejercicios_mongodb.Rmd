@@ -1,5 +1,6 @@
 ---
 title: "MongoDB"
+subtitle: "Taller de NoSQL"
 author: "Pablo Hidalgo"
 output:
   pdf_document: default

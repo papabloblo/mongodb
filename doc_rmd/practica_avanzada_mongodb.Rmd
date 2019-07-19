@@ -1,8 +1,11 @@
 ---
 title: "Práctica avanzada con MongoDB"
-subtitle: "Taller de NoSQL"
 author: "Pablo Hidalgo"
-output: html_document
+subtitle: Taller de NoSQL
+output:
+  pdf_document: 
+    number_sections: yes
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -89,6 +92,8 @@ Para importar un conjunto de datos podemos utilizar [`mongoimport`](https://docs
 mongoimport --db bicimad --collection usage --file 201812_Usage_Bicimad.json
 mongoimport --db bicimad --collection stations --file Bicimad_Stations_201812.json
 ```
+
+> Si estás en Windows: abre **símbolo de sistema** y sustituye `mongoimport` por `C:\Program Files\MongoDB\Server\4.0\bin\mongo.exe` en las sentencias anteriores.
 
 Si ahora entramos en la shell de mongo mediante el comando `mongo` y escribimos `show dbs`, podemos ver la base de datos `bicimad` que hemos creado al importar el conjunto de datos.
 
@@ -618,20 +623,32 @@ db.stations2.find().limit(3).pretty()
 Aunque en MongoDB se promueve una estructura *desnormalizada* de los datos, es posible hacer cruces en el caso de que sea necesario.
 
 
-Vamos a hacer un ejemplo entre todos. Primero, vamos a crear un vista con el maestro de las estaciones. **Escribe** una sentencia que devuelva
+Vamos a hacer un ejemplo entre todos. Primero, vamos a crear una vista con el maestro de las estaciones. **Escribe** una sentencia que genere una vista llamada `info_estaciones` que devuelva
 
 ```{}
 { "name" : "Puerta del Sol A", "_id" : 1 }
 { "name" : "Puerta del Sol B", "_id" : 2 }
 { "name" : "Miguel Moya", "_id" : 3 }
 { "name" : "Plaza Conde Suchil", "_id" : 4 }
-{ "name" : "Malasa�a", "_id" : 5 }
+{ "name" : "Malasaña", "_id" : 5 }
 ...
 ```
 
-Y genera una vista que se llame `info_estaciones`.
+Ahora vamos a añadir la dirección de la estación de origen para cada documento de la colección `usage` a través de el stage [`$lookup`](https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/). Su sintaxis es
 
-Ahora vamos a añadir la dirección de la estación de origen para cada documento de la colección `usage` a través de el stage [`$lookup`](https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/)
+```{}
+{
+   $lookup:
+     {
+       from: <collection to join>,
+       localField: <field from the input documents>,
+       foreignField: <field from the documents of the "from" collection>,
+       as: <output array field>
+     }
+}
+```
+
+Y podemos hacerlo como
 
 ```{}
 db.usage.aggregate(
@@ -642,17 +659,31 @@ db.usage.aggregate(
       foreignField: "_id",
       as: "direccion"
       }
-  },
-  {$unwind: "$direccion"},
-  {$replaceRoot: {newRoot: {$mergeObjects: ["$direccion", "$$ROOT"]}}},
-  {$project: {direccion: 0}}
+  }
 ).pretty()
 ```
 
 
+<!-- ```{} -->
+<!-- db.usage.aggregate( -->
+<!--   {$limit: 1}, -->
+<!--   { $lookup: { -->
+<!--       from: "info_estaciones", -->
+<!--       localField: "idunplug_base", -->
+<!--       foreignField: "_id", -->
+<!--       as: "direccion" -->
+<!--       } -->
+<!--   }, -->
+<!--   {$unwind: "$direccion"}, -->
+<!--   {$replaceRoot: {newRoot: {$mergeObjects: ["$direccion", "$$ROOT"]}}}, -->
+<!--   {$project: {direccion: 0}} -->
+<!-- ).pretty() -->
+<!-- ``` -->
+
+
 # Creación de nuevas colecciones
 
-Podemos crear una nueva colección a partir del resultado de `aggregate()`. Para ello tenemos que utilizar el *stage* `$out`:
+Podemos crear una nueva colección a partir del resultado de `aggregate()`. Para ello tenemos que utilizar el *stage* [`$out`](https://docs.mongodb.com/manual/reference/operator/aggregation/out/):
 
 ```{}
 db.usage.aggregate([

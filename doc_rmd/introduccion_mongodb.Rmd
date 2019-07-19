@@ -1,5 +1,5 @@
 ---
-title: "MongoDB"
+title: "Introducción a MongoDB"
 author: "Pablo Hidalgo"
 output:
   html_document:
@@ -17,21 +17,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 > La instalación para los sistemas operativos soportados está documentada [aquí](https://docs.mongodb.com/manual/installation/).
 
-## Instalación en Windows
-
-> En la url https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/ puedes consultar los pasos a seguir.
-
-Primero debemos [descargar el instalador](https://www.mongodb.com/download-center/community) adecuado a nuestro sistema. 
-
-
-## Instalación en MacOS
-
-
-
+Al final, pregunta se quiere instalar **MongoDB Compass**. Se trata de una interfaz gráfica que permite explorar los datos de forma visual y hacer algunas operaciones sencillas. Sin embargo, su capacidad es limitada. En este curso nos centraremos en el uso de la ventana de comandos
 
 # Primeros pasos
 
 Una vez que se ha completado la instalación, ya podemos empezar a *divertirnos* con MongoDB.
+
+Si estás en Windows, busca el ejecutable `mongo.exe` (Lo habitual es que lo puedas encontrar en `C:\Program Files\MongoDB\Server\4.0\bin\mongo.exe`).
+
+Si estás en MacOS, 
 
 > Asegúrate de que MongoDB está funcionando. Para ello, debes haber ejecutado en la línea de comandos `mongod` y tienes que haber obtenido algo como `initandlisten] waiting for connections on port 27017`. Ten cuidado de no cerrar esta ventana ya que matarías la sesión de MongoDB.
 

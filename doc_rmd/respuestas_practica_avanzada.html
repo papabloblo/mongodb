@@ -255,9 +255,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type="text/css">
 .main-container {
@@ -288,8 +286,6 @@ summary {
 </style>
 
 
-
-<div class="container-fluid main-container">
 
 <!-- tabsets -->
 
@@ -364,19 +360,42 @@ $(document).ready(function () {
 
 
 
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
 
 <div class="fluid-row" id="header">
 
 
 
 <h1 class="title toc-ignore">Respuestas</h1>
-<h4 class="author"><em>papabloblo</em></h4>
-<h4 class="date"><em>21/2/2019</em></h4>
+<h4 class="author">papabloblo</h4>
+<h4 class="date">21/2/2019</h4>
 
 </div>
 
 
+<pre><code>db.usage.aggregate([
+  {
+    $group: 
+    {
+      _id: {month: { $month: &quot;$unplug_hourTime&quot;}, day: { $dayOfMonth: &quot;$unplug_hourTime&quot;}},
+      cuenta: {$sum: 1}
+    }
+  },
+  {$sort: {&quot;_id.month&quot;: 1, &quot;_id.day&quot;: 1 }}
+])</code></pre>
 <pre><code>db.stations.aggregate({$limit: 1}, {$project:{_id: 1, num_stations: {$size: &quot;$stations&quot;}}})</code></pre>
+<pre><code>db.stations.aggregate(
+  {$limit: 1},
+  {$project:{stations: {$slice: [&quot;$stations&quot;, 15, 3]}}}
+  ).pretty()</code></pre>
 <pre><code>db.stations.find({}, {stations: {$elemMatch: {name: &quot;Paseo de las Delicias&quot;}}, &quot;stations.free_bases&quot;:1, &quot;stations.name&quot;: 1}).limit(3).pretty()</code></pre>
 <pre><code>db.stations.aggregate({$limit: 1}, {$unwind: &quot;$stations&quot;}, {$group: {_id: &quot;$stations.name&quot;, avg_free_bases: {$avg: &quot;$stations.free_bases&quot;}}}).pretty()</code></pre>
 <pre><code>db.stations.aggregate({$limit: 1}, {$unwind: &quot;$stations&quot;}, {$project: {name: &quot;$stations.name&quot;, _id: &quot;$stations.id&quot;}}).pretty()</code></pre>

@@ -41,14 +41,26 @@ db.usage.aggregate(
 # Pregunta 4
 
 ```{}
-db.usage.aggregate({$match: {idunplug_base: 14}}, {$group: {_id: "$idunplug_base", tiempo_max: {$max: "$travel_time"}, tiempo_min: {$min: "$travel_time"}, tiempo_avg: {$avg: "$travel_time"}}})
+db.usage.aggregate(
+  {$match: {idunplug_station: 14}},
+  {$group: 
+    {_id: "$idunplug_base",
+      tiempo_max: {$max: "$travel_time"},
+      tiempo_min: {$min: "$travel_time"},
+      tiempo_avg: {$avg: "$travel_time"}
+      }
+  }
+)
 ```
 
 # Pregunta 5
 
 ```{}
 db.usage.aggregate(
-  {$group: {_id: {$dayOfMonth: "$unplug_hourTime"}, travel_time_avg: {$avg: "$travel_time"}}},
+  {$group: {_id: {$dayOfMonth: "$unplug_hourTime"}, 
+            travel_time_avg: {$avg: "$travel_time"}
+            }
+    },
   {$sort: {_id: 1}}
 )
 ```
@@ -77,8 +89,11 @@ db.stations.aggregate(
 
 ```{}
 db.stations.aggregate(
-  {$addFields: {day: {$dayOfMonth: {$dateFromString: {dateString: "$_id"}}}}},
-  {$match: {day: 8}},
+  {$addFields: {
+      day: {$dayOfMonth: {$dateFromString: {dateString: "$_id"}}}},
+      month: {$month: {$dateFromString: {dateString: "$_id"}}}},
+      },
+  {$match: {day: 8, month: 12}},
   {$unwind: "$stations"},
   {$group: {_id: "$stations.free_bases", stations: {$push: "$stations.id"}}},
   {$sort: {_id: -1}},

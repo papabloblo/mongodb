@@ -1,0 +1,956 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Práctica avanzada con MongoDB},
+            pdfauthor={Pablo Hidalgo},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Práctica avanzada con MongoDB}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+  \subtitle{Taller de NoSQL}
+  \author{Pablo Hidalgo}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+    \date{}
+    \predate{}\postdate{}
+  
+
+\begin{document}
+\maketitle
+
+En la \textbf{primera sesión} vimos un repaso de las \textbf{operaciones
+CRUD básicas para trabajar con MongoDB}. En esta práctica vamos ir un
+poco más allá y hacer operaciones más complejas con MongoDB.
+
+\hypertarget{los-datos}{%
+\section{Los datos}\label{los-datos}}
+
+Hasta ahora hemos creado una colección de forma \emph{manual} a través
+del comando \texttt{insert()}. En esta práctica vamos a trabajar de una
+forma algo más \emph{real}, importando un conjunto de documentos (ya
+sabes, las colecciones están compuestas de documentos) con \emph{más
+gracia}.
+
+Vamos a utilizar datos que el ayuntamiento de Madrid tiene en su portal
+de datos abiertos. En particular, vamos a trabajar con los datos en este
+\href{https://opendata.emtmadrid.es/Datos-estaticos/Datos-generales-(1)}{enlace}
+en el que se puede encontrar datos del uso del servicio de bicicletas
+eléctricas de ayuntamiento de Madrid \textbf{BiciMAD}.
+
+En la web aparecen dos conjuntos de datos, los que se llaman
+\texttt{Datos\ de\ uso\ de\ ...} contienen la traza de todos los
+movimientos que se han producido. Es decir, información de cada vez que
+un usuario ha cogido una bicicleta en una estación y la ha dejado en
+otra.
+
+Los que se denominan
+\texttt{Situación\ estaciones\ bicimad\ por\ día\ y\ hora\ de\ ...}
+recogen información de en qué estado se encuentra cada estación en
+diversos instantes temporales.
+
+\begin{quote}
+\textbf{Nota:} en esta práctica se han usado los conjuntos de datos
+\texttt{201812\_Usage\_Bicimad.json} y
+\texttt{Bicimad\_Stations\_201812.json}. Si utilizas otros, los
+resultados que obtengas serán ligeramente distintos.
+\end{quote}
+
+\begin{verbatim}
+{
+    "_id" : "2018-11-01T00:05:32.277622",
+    "stations" : [
+        {
+            "activate" : 1,
+            "name" : "Segovia 26",
+            "reservations_count" : 0,
+            "light" : 0,
+            "total_bases" : 24,
+            "free_bases" : 18,
+            "number" : "166",
+            "longitude" : "-3.7135833",
+            "no_available" : 0,
+            "address" : "Calle Segovia, 26",
+            "latitude" : "40.4138333",
+            "dock_bikes" : 6,
+            "id" : 174
+        }
+    ]
+}
+\end{verbatim}
+
+\hypertarget{donde-guardar-los-datos-opcional}{%
+\section{\texorpdfstring{Dónde guardar los datos
+\emph{(opcional)}}{Dónde guardar los datos (opcional)}}\label{donde-guardar-los-datos-opcional}}
+
+MongoDB es una base de datos y, como tal, tiene que guardar los datos
+físicamente en el disco duro. Podemos \emph{levantar} el servicio de
+MongoDB eligiendo \textbf{dónde se van a almacenar los datos}.
+
+Para ello, primero creamos una nueva carpeta donde queremos que se
+guarden los datos. En una distribución Linux o Mac, para crear una nueva
+carpeta, lo podemos hacer con el comando \texttt{mkdir} (la opción
+\texttt{-p} significa que creará las carpetas intermedias necesarias)
+
+\begin{verbatim}
+mkdir -p mongodb/data/db
+\end{verbatim}
+
+En Windows
+
+\begin{verbatim}
+md "\data\db"
+\end{verbatim}
+
+Ahora podemos \emph{lanzar} el servicio de MongoDB especificando la ruta
+donde tiene que almacenar los datos. En Mac/Linux:
+
+\begin{verbatim}
+mongod --dbpath ruta
+\end{verbatim}
+
+En Windows:
+
+\begin{verbatim}
+"C:\Program Files\MongoDB\Server\4.0\bin\mongod.exe" --dbpath="ruta"
+\end{verbatim}
+
+Esto habrá lanzado el \emph{motor} de MongoDB. Si queremos entrar en la
+\emph{shell} de MongoDB, abrimos una nueva ventana de la terminal y
+escribimos \texttt{mongo} o ejecutamos
+\texttt{C:\textbackslash{}Program\ Files\textbackslash{}MongoDB\textbackslash{}Server\textbackslash{}4.0\textbackslash{}bin\textbackslash{}mongod.exe}.
+
+\hypertarget{importar-los-datos}{%
+\section{Importar los datos}\label{importar-los-datos}}
+
+Para importar un conjunto de datos podemos utilizar
+\href{https://docs.mongodb.com/manual/reference/program/mongoimport/index.html}{\texttt{mongoimport}}.
+
+\begin{quote}
+El comando \texttt{mongoimport} se utiliza directamente desde la línea
+de comandos del sistema, no desde la shell de mongo.
+\end{quote}
+
+\begin{verbatim}
+mongoimport --db bicimad --collection usage --file 201812_Usage_Bicimad.json
+mongoimport --db bicimad --collection stations --file Bicimad_Stations_201812.json
+\end{verbatim}
+
+\begin{quote}
+Si estás en Windows: abre \textbf{símbolo de sistema} y sustituye
+\texttt{mongoimport} por
+\texttt{C:\textbackslash{}Program\ Files\textbackslash{}MongoDB\textbackslash{}Server\textbackslash{}4.0\textbackslash{}bin\textbackslash{}mongo.exe}
+en las sentencias anteriores.
+\end{quote}
+
+Si ahora entramos en la shell de mongo mediante el comando
+\texttt{mongo} y escribimos \texttt{show\ dbs}, podemos ver la base de
+datos \texttt{bicimad} que hemos creado al importar el conjunto de
+datos.
+
+Cambiamos la base de datos con \texttt{use\ bicimad} y escribiendo
+\texttt{show\ collections} veremos la colección \texttt{usage}.
+
+\hypertarget{datos-de-uso}{%
+\section{Datos de uso}\label{datos-de-uso}}
+
+\hypertarget{manipulando-los-datos}{%
+\subsection{Manipulando los datos}\label{manipulando-los-datos}}
+
+Para ver la magnitud de la colección, es conveniente hacer
+\texttt{db.usage.count()} de donde obtendremos 273.272 colecciones.
+
+Vamos a intentar entender la estructura de los documentos. Si ejecutamos
+\texttt{db.usage.findOne()} obtendremos el primer documento para una
+inspección rápida.
+
+\begin{verbatim}
+{
+    "_id" : ObjectId("5c085aae2f384324b8a10925"),
+    "user_day_code" : "39d847f3af0e9d8ab5f29fa7b5af3612c87e84f4d35a1cb479edf8d38f1ce8ac",
+    "idplug_base" : 7,
+    "user_type" : 3,
+    "idunplug_base" : 7,
+    "travel_time" : 16,
+    "idunplug_station" : 75,
+    "ageRange" : 5,
+    "idplug_station" : 75,
+    "unplug_hourTime" : ISODate("2018-11-30T23:00:00Z"),
+    "zip_code" : ""
+}
+\end{verbatim}
+
+Si ejecutamos \texttt{db.usage.find().limit(3).pretty()} para acceder a
+los tres primeros documentos, tenemos que el tercero de ellos tiene la
+siguiente estructura
+
+\begin{verbatim}
+{
+    "_id" : ObjectId("5c085aae2f384324b8a10928"),
+    "user_day_code" : "697479f320b109464122ad3ce33eb368a6bc6755682f95545586c240b433f24a",
+    "idplug_base" : 19,
+    "track" : {
+        "type" : "FeatureCollection",
+        "features" : [
+            {
+                "geometry" : {
+                    "type" : "Point",
+                    "coordinates" : [
+                        -3.6949683,
+                        40.4031057997222
+                    ]
+                },
+                "type" : "Feature",
+                "properties" : {
+                    "var" : "28045,ES,Madrid,Madrid,CALLE PALOS DE LA FRONTERA 25,Madrid",
+                    "speed" : 1.94,
+                    "secondsfromstart" : 246
+                }
+            },
+            {
+                "geometry" : {
+                    "type" : "Point",
+                    "coordinates" : [
+                        -3.6972233,
+                        40.4053758
+                    ]
+                },
+                "type" : "Feature",
+                "properties" : {
+                    "var" : "28012,ES,Madrid,Madrid,CALLE JOSE ANTONIO DE ARMONA 12,Madrid",
+                    "speed" : 8,
+                    "secondsfromstart" : 186
+                }
+            },
+            {
+                "geometry" : {
+                    "type" : "Point",
+                    "coordinates" : [
+                        -3.69792949972222,
+                        40.406854
+                    ]
+                },
+                "type" : "Feature",
+                "properties" : {
+                    "var" : "28012,ES,Madrid,Madrid,CALLE MALLORCA 7,Madrid",
+                    "speed" : 0.66,
+                    "secondsfromstart" : 126
+                }
+            },
+            {
+                "geometry" : {
+                    "type" : "Point",
+                    "coordinates" : [
+                        -3.69815579972222,
+                        40.4078321
+                    ]
+                },
+                "type" : "Feature",
+                "properties" : {
+                    "var" : "28012,ES,Madrid,Madrid,CALLE SOMBRERERIA 24,Madrid",
+                    "speed" : 6.36,
+                    "secondsfromstart" : 66
+                }
+            }
+        ]
+    },
+    "user_type" : 1,
+    "idunplug_base" : 14,
+    "travel_time" : 262,
+    "idunplug_station" : 57,
+    "ageRange" : 4,
+    "idplug_station" : 128,
+    "unplug_hourTime" : ISODate("2018-11-30T23:00:00Z"),
+    "zip_code" : "28045"
+}
+\end{verbatim}
+
+Como ya sabemos, MongoDB es una base de datos \emph{schemaless} y que
+++permite que cada documento de una colección pueda tener una estructura
+ligeramente distinta**. En este último documento tenemos el campo
+\texttt{track} que no aparecía en los dos documentos anteriores.
+
+Una cosa que sí comparten los tres primeros documentos es el
+\textbf{código postal}. Para extraer solamente el código postal de las
+colecciones, podemos hacer con
+\texttt{db.usage.find(\{\},\ \{zip\_code:\ 1\})} de donde obtendremos:
+
+\begin{verbatim}
+{ "_id" : ObjectId("5c085aae2f384324b8a10925"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aae2f384324b8a1092c"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aae2f384324b8a10928"), "zip_code" : "28045" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10948"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10958"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aae2f384324b8a10931"), "zip_code" : "28020" }
+{ "_id" : ObjectId("5c085aae2f384324b8a10940"), "zip_code" : "28010" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a1095c"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aae2f384324b8a10938"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a1095b"), "zip_code" : "28045" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10941"), "zip_code" : "28014" }
+{ "_id" : ObjectId("5c085aae2f384324b8a1093a"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10962"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10966"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aae2f384324b8a10937"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a1095f"), "zip_code" : "28004" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a1095e"), "zip_code" : "28012" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a1096d"), "zip_code" : "11207" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10964"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10971"), "zip_code" : "" }
+\end{verbatim}
+
+En muchos documentos, el campo \texttt{zip\_code} está sin informar.
+Como cada documento puede tener una estructura distinta, vamos a hacer
+que desaparezca este campo en aquellos documentos en los que esté sin
+informar y así optimizar el espacio en disco.
+
+El operador
+\href{https://docs.mongodb.com/manual/reference/operator/update/unset/}{\texttt{\$unset}}
+elimina un campo en particular. Así, podemos hacer
+\texttt{db.usage.update(\{zip\_code:\ ""\},\ \{\$unset:\ \{zip\_code:\ ""\}\})}.
+Si volvemos a ejecutar \texttt{db.usage.find(\{\},\ \{zip\_code:\ 1\})},
+obtenemos
+
+\begin{verbatim}
+{ "_id" : ObjectId("5c085aae2f384324b8a10925") }
+{ "_id" : ObjectId("5c085aae2f384324b8a1092c"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aae2f384324b8a10928"), "zip_code" : "28045" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10948"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10958"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aae2f384324b8a10931"), "zip_code" : "28020" }
+{ "_id" : ObjectId("5c085aae2f384324b8a10940"), "zip_code" : "28010" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a1095c"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aae2f384324b8a10938"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a1095b"), "zip_code" : "28045" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10941"), "zip_code" : "28014" }
+{ "_id" : ObjectId("5c085aae2f384324b8a1093a"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10962"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10966"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aae2f384324b8a10937"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a1095f"), "zip_code" : "28004" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a1095e"), "zip_code" : "28012" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a1096d"), "zip_code" : "11207" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10964"), "zip_code" : "" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10971"), "zip_code" : "" }
+\end{verbatim}
+
+¿Qué ha pasado? El comando \texttt{db.usage.update()} solo actualiza el
+\textbf{primer} documento que satisface la condición. Para actualizar
+todos los documentos que cumplen la condición podemos hacerlo usando el
+parámetro \texttt{multi}
+\texttt{db.usage.update(\{zip\_code:\ ""\},\ \{\$unset:\ \{zip\_code:\ ""\}\},\ \{multi:\ 1\})}
+o con
+\texttt{db.usage.updateMany(\{zip\_code:\ ""\},\ \{\$unset:\ \{zip\_code:\ ""\}\})}.
+Ahora sí que tenemos lo que queremos:
+
+\begin{verbatim}
+{ "_id" : ObjectId("5c085aae2f384324b8a10925") }
+{ "_id" : ObjectId("5c085aae2f384324b8a1092c") }
+{ "_id" : ObjectId("5c085aae2f384324b8a10928"), "zip_code" : "28045" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10948") }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10958") }
+{ "_id" : ObjectId("5c085aae2f384324b8a10931"), "zip_code" : "28020" }
+{ "_id" : ObjectId("5c085aae2f384324b8a10940"), "zip_code" : "28010" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a1095c") }
+{ "_id" : ObjectId("5c085aae2f384324b8a10938") }
+{ "_id" : ObjectId("5c085aaf2f384324b8a1095b"), "zip_code" : "28045" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10941"), "zip_code" : "28014" }
+{ "_id" : ObjectId("5c085aae2f384324b8a1093a") }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10962") }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10966") }
+{ "_id" : ObjectId("5c085aae2f384324b8a10937") }
+{ "_id" : ObjectId("5c085aaf2f384324b8a1095f"), "zip_code" : "28004" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a1095e"), "zip_code" : "28012" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a1096d"), "zip_code" : "11207" }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10964") }
+{ "_id" : ObjectId("5c085aaf2f384324b8a10971") }
+\end{verbatim}
+
+Al haber eliminado el campo \texttt{zip\_code} de algunos documentos, si
+ejecutamos \texttt{db.usage.find(\{zip\_code:\ ""\})} no obtendremos
+ningún resultado. Para extraer aquellos documentos que tengan o no
+tengan un determinado campo, podemos utilizar el operador
+\href{https://docs.mongodb.com/manual/reference/operator/query/exists/}{`\$exists}
+
+\begin{verbatim}
+db.usage.find({zip_code: {$exists: 0}}).pretty()
+\end{verbatim}
+
+\hypertarget{agregacion}{%
+\subsection{Agregación}\label{agregacion}}
+
+Una operación habitual en cualquier base de datos es la de
+\textbf{agregar} datos. Los operadores de agregación agrupan valores de
+múltiples documentos juntos y pueden realizar operaciones para devolver
+un único resultado. Tenemos el \emph{aggregation pipeline} para hacer
+agregaciones.
+\href{https://docs.mongodb.com/manual/core/aggregation-pipeline/}{Aquí}
+hay un pequeño vídeo explicativo.
+
+El \emph{aggregation pipeline} de MongoDB consiste en \emph{stages}.
+Cada \emph{stage} transforma los documentos como si pasasen por el
+\emph{pipeline}. El \emph{stage pipeline} no es necesario que produzca
+un \emph{output} para cada documento de \emph{input}.
+
+Vamos a empezar calculando \textbf{cuántos viajes de producen para cada
+estación de origen (campo \texttt{idunplug\_station})}. En código SQL,
+haríamos
+
+\begin{verbatim}
+SELECT COUNT(*) AS count
+FROM usage
+GROUP BY idunplug_base;
+\end{verbatim}
+
+En MongoDB necesitamos el \emph{aggregation pipeline stage}
+\texttt{\$group}. La estructura de \texttt{\$group} es
+
+\begin{verbatim}
+{ $group: { _id: <expression>, <field1>: { <accumulator1> : <expression1> }, ... } }
+\end{verbatim}
+
+El campo \texttt{\_id} es \textbf{obligatorio}. Para referirnos a un
+campo del documento, haremos \texttt{\$idunplug\_station}. Para hacer el
+conteo, deberemos recurrir al operador suma \texttt{\$sum}. La sentencia
+sería
+
+\begin{verbatim}
+db.usage.aggregate([
+  {
+    $group: {
+      _id: "$idunplug_station",
+      count: { $sum: 1 }
+      }
+  }
+])
+\end{verbatim}
+
+\begin{quote}
+Hemos escrito \texttt{\$sum:\ 1} para hacer el conteo (asignar 1 a cada
+documento). Podemos utilizar este operador para sumar valores numéricos.
+Como MongoDB es flexible, puede que en un mismo campo de documentos
+distintos se almacenen valores numéricos y no numéricos. El operador
+\texttt{\$sum} solo tendrá en cuenta aquellos que sean numéricos.
+\end{quote}
+
+De forma parecida, podemos calcular el tiempo medio de uso (campo
+\texttt{travel\_time}) de una bici en función de la estación de partida.
+con el operardor \texttt{\$avg}.
+
+\begin{verbatim}
+db.usage.aggregate([
+  {
+    $group: {
+      _id: "$idunplug_station",
+      avg_travel_time:{ $avg: "$travel_time" }
+      }
+  }
+])
+\end{verbatim}
+
+Podemos usar \texttt{\$group} también para devolver los valores únicos.
+Por ejemplo, para conocer qué estaciones de origen hay
+
+\begin{verbatim}
+db.usage.aggregate([
+  {
+    $group: {
+      _id: "$idunplug_station"
+      }
+  }
+])
+\end{verbatim}
+
+Cuando agregamos datos estamos tratando de resumir la información. Tal y
+como hemos usado hasta ahora \texttt{\$group} nos devuelve el resultado
+en un orden indeterminado. Si queremos ordenar los documentos obtenidos,
+tenemos que utilizar el \emph{stage}
+\href{https://docs.mongodb.com/manual/reference/operator/aggregation/sort/}{\texttt{\$sort}}.
+La estructura es
+
+\begin{verbatim}
+{ $sort: { <field1>: <sort order>, <field2>: <sort order> ... } }
+\end{verbatim}
+
+donde \texttt{\textless{}sort\ order\textgreater{}} toma valor 1 para
+especificar un orden ascendente y -1 descendente.
+
+\begin{verbatim}
+db.usage.aggregate([
+  {
+    $group: {
+      _id: "$idunplug_station",
+      count:{ $sum: 1 }
+      }
+  },
+  {$sort: {_id: 1}}
+])
+\end{verbatim}
+
+Por último, \texttt{\$match} puede ser útil para filtrar primero los
+documentos de los que nos interese agregar.
+
+\begin{verbatim}
+db.usage.aggregate([
+  { $match: {idunplug_station: {$in: [1, 3, 5] }}},
+  {
+    $group: {
+      _id: "$idunplug_station",
+      count:{ $sum: 1 }
+      }
+  },
+  {$sort: {_id: 1}}
+])
+\end{verbatim}
+
+\begin{quote}
+El \emph{aggregate pipeline} lleva un orden secuencial. Por tanto,
+utiliza \texttt{\$match} tan pronto como sea posible para limitar los
+documentos que se propagan en el \emph{pipeline}.
+\end{quote}
+
+Como en cualquier base de datos, el modelo, es decir, la estructura que
+tenga los datos, será relevante para que unas operaciones sean más
+fáciles de realizar que otras.
+
+Por ejemplo, si nuestro interés principal es el de analizar el tiempo de
+viaje en función de las estaciones de partida, sería interesante tener
+una estructura como
+
+\begin{verbatim}
+{ "_id" : 24, "travel_time" : [ 1010, 852, 1027 ] }
+{ "_id" : 6, "travel_time" : [ 383, 412, 901, 263, 287, 1395 ] }
+{ "_id" : 16, "travel_time" : [ 477, 570, 794, 512, 626 ] }
+{ "_id" : 19, "travel_time" : [ 206, 404, 334, 416, 356, 983, 493 ] }
+{ "_id" : 7, "travel_time" : [ 16, 801, 623, 688, 298, 210 ] }
+{ "_id" : 26, "travel_time" : [ 410 ] }
+{ "_id" : 1, "travel_time" : [ 210, 394, 601, 542, 428, 426, 961 ] }
+{ "_id" : 17, "travel_time" : [ 325, 799, 904, 427 ] }
+{ "_id" : 2, "travel_time" : [ 386, 883, 538, 989, 379, 490, 642, 525, 777, 412 ] }
+{ "_id" : 15, "travel_time" : [ 564 ] }
+{ "_id" : 14, "travel_time" : [ 262, 589, 343, 760 ] }
+{ "_id" : 8, "travel_time" : [ 546, 537, 432 ] }
+{ "_id" : 23, "travel_time" : [ 250, 714, 1455 ] }
+{ "_id" : 3, "travel_time" : [ 280, 385, 320, 207, 266, 894 ] }
+{ "_id" : 22, "travel_time" : [ 456, 493, 1191, 1266, 388 ] }
+{ "_id" : 11, "travel_time" : [ 259, 234, 465, 733, 11 ] }
+{ "_id" : 20, "travel_time" : [ 405, 546, 382, 594 ] }
+{ "_id" : 4, "travel_time" : [ 517, 988, 209 ] }
+{ "_id" : 10, "travel_time" : [ 316, 766, 355, 381, 519 ] }
+{ "_id" : 13, "travel_time" : [ 466, 1049, 970 ] }
+\end{verbatim}
+
+Esto lo podemos hacer con el operador \texttt{\$push}. Este operador
+devuelve un array con todos los valores que resultan de aplicar la
+operación de agrupación.
+
+\begin{verbatim}
+db.usage.aggregate([
+  {$limit: 100},
+  {
+  $group:{
+    _id: "$idunplug_station",
+    travel_time: { $push: "$travel_time"}
+  }
+  }
+])
+\end{verbatim}
+
+\begin{quote}
+Para hacer legible la salida, hemos utilizado \texttt{\$limit} para
+hacer la operación solamente sobre los 100 primeros documentos.
+\end{quote}
+
+Un \emph{stage} importante del \emph{aggregation pipeline} es
+\texttt{\$project}. Este permite hacer transformaciones sobre los datos.
+Es útil, por ejemplo, para trabajar con fechas que tienen sus propios
+operadores (bastante intuitivos).
+
+\begin{verbatim}
+db.usage.aggregate([
+  {$limit: 5},
+  {$project: {
+    unplug_month: { $month: "$unplug_hourTime"},
+    unplug_day: { $dayOfMonth: "$unplug_hourTime"},
+    unplug_year: { $year: "$unplug_hourTime"}
+  }
+  }
+])
+\end{verbatim}
+
+Podemos utilizar \texttt{\$project} como fase previa a utilizar
+\texttt{\$group}
+
+\begin{verbatim}
+db.usage.aggregate([
+
+  {$project: {
+    unplug_month: { $month: "$unplug_hourTime"},
+    unplug_day: { $dayOfMonth: "$unplug_hourTime"},
+    unplug_year: { $year: "$unplug_hourTime"}
+  }
+  },
+  {$group: {_id: {month: "$unplug_month", day: "$unplug_day"}, cuenta: {$sum: 1}}}
+])
+\end{verbatim}
+
+Aunque también podemos utilizar los operadores dentro del propio
+\texttt{\$group}
+
+\begin{verbatim}
+db.usage.aggregate([
+  {
+    $group: 
+    {
+      _id: {month: { $month: "$unplug_hourTime"}, day: { $dayOfMonth: "$unplug_hourTime"}},
+      cuenta: {$sum: 1}
+    }
+  }
+])
+\end{verbatim}
+
+\begin{quote}
+\textbf{Ejercicio:} utilizando la última sentencia, haz que el resultado
+esté ordenado primero por mes y luego por día del mes.
+\end{quote}
+
+\hypertarget{datos-de-situacion-de-las-estaciones}{%
+\section{Datos de situación de las
+estaciones}\label{datos-de-situacion-de-las-estaciones}}
+
+Ya sabemos que en MongoDB no existe el concepto de esquema como en las
+bases de datos relacionales y que cada documento puede tener una
+estructura distinta. Esto es un problema cuando no hemos formado parte
+de la arquitectura de los datos o no están lo suficientemente bien
+documentados.
+
+Si el tamaño de los documentos es relativamente pequeño, podemos
+utilizar \texttt{db.coleccion.find()} para hacernos una idea de la
+estructura (siendo conscientes de que cada documento puede variar su
+estructura).
+
+Sin embargo, esto no siempre es posible. La colección \texttt{stations}
+que hemos creado es uno de estos casos. Si ejecutamos
+\texttt{db.stations.findOne()} obtenemos un documento bastante largo que
+nos impide conocer la estructura.
+
+Podemos conocer los campos de este primer documento así
+
+\begin{verbatim}
+Object.keys(db.stations.findOne())
+\end{verbatim}
+
+Como vemos, tiene dos campos: \texttt{\_id} y \texttt{stations}.
+
+\begin{quote}
+\textbf{Ejercicio:} ¿De cuántos documentos está compuesto el campo
+\texttt{stations} del primer documento? Pista: utiliza \texttt{\$size}.
+\end{quote}
+
+\hypertarget{trabajando-con-arrays}{%
+\subsection{Trabajando con arrays}\label{trabajando-con-arrays}}
+
+Para seguir haciéndonos la idea de la estructura de la colección, vamos
+a quedarnos con solamente los tres primeros elementos del campo
+\texttt{stations}. Para ello, tenemos el operador
+\href{https://docs.mongodb.com/manual/reference/operator/aggregation/slice/}{\texttt{\$slice}}
+que devuelve parte de un array. La siguiente sintaxis devuelve los
+\texttt{\textless{}n\textgreater{}} primer elementos del
+\texttt{\textless{}array\textgreater{}} (si
+\texttt{\textless{}n\textgreater{}} es negativo, devuelve los
+\texttt{\textless{}n\textgreater{}} últimos elementos).
+
+\begin{verbatim}
+{ $slice: [ <array>, <n> ] }
+\end{verbatim}
+
+La operación que queremos sería
+
+\begin{verbatim}
+db.stations.aggregate(
+  {$limit: 1},
+  {$project:{stations: {$slice: ["$stations", 3]}}}
+  )
+\end{verbatim}
+
+\begin{quote}
+\textbf{Ejercicio:} revisando la documentación de \texttt{\$slice}.
+¿Cómo devolverías los documentos del 15 al 18?
+\end{quote}
+
+Imaginemos que queremos extraer la información de solamente la estación
+de la dirección \texttt{Serrano\ 210}. Podríamos intentar hacerlo así
+
+\begin{verbatim}
+db.stations.find({"stations.name": "Serrano 210"})
+\end{verbatim}
+
+Esta sentencia nos devuelve todos los documentos donde aparezca
+\texttt{Serrano\ 210} que, en este caso, es la colección entera.
+
+El operador
+\href{https://docs.mongodb.com/manual/reference/operator/projection/elemMatch/\#proj._S_elemMatch}{\texttt{\$elemMatch}}
+limita el contenido de un campo \emph{array} para devolver solo aquel
+\textbf{primer} elemento que contenga la condición expresada. Es decir,
+la siguiente sentencia nos devolverá solo los documentos de
+\texttt{stations} con la dirección \texttt{Serrano\ 210}:
+
+\begin{verbatim}
+db.stations.find({}, {stations: {$elemMatch: {name: "Serrano 210"}}}).limit(3).pretty()
+\end{verbatim}
+
+\begin{quote}
+\textbf{Ejercicio:} Escribe una sentencia que devuelva lo siguiente
+\end{quote}
+
+\begin{verbatim}
+{
+    "_id" : "2018-12-01T00:30:12.524146",
+    "stations" : [
+        {
+            "name" : "Paseo de las Delicias",
+            "free_bases" : 19
+        }
+    ]
+}
+{
+    "_id" : "2018-12-01T01:30:12.684386",
+    "stations" : [
+        {
+            "name" : "Paseo de las Delicias",
+            "free_bases" : 9
+        }
+    ]
+}
+{
+    "_id" : "2018-12-01T03:30:15.860607",
+    "stations" : [
+        {
+            "name" : "Paseo de las Delicias",
+            "free_bases" : 0
+        }
+    ]
+}
+\end{verbatim}
+
+Una pregunta que nos gustaría responder sobre la base de datos es
+\textbf{cuántas bases libres hay de media en cada estación}. La
+estructura de los documentos complica un poco la tarea, ya que tenemos
+un documento por cada instante temporal.
+
+Una forma de resolverlo sería llegar a tener \textbf{un documento por
+cada instante temporal y estación}, es decir, tenemos que dividir el
+array \texttt{stations}. Para esta tarea tenemos el stage
+\href{https://docs.mongodb.com/manual/reference/operator/aggregation/unwind/}{\texttt{\$unwind}}.
+
+\begin{verbatim}
+db.stations.aggregate({$unwind: "$stations"}, {$limit: 5}).pretty()
+\end{verbatim}
+
+\begin{quote}
+\textbf{Ejercicio:} Calcula la media de las bases libres para cada
+estación usando el stage \texttt{\$unwind}.
+\end{quote}
+
+\hypertarget{indices}{%
+\section{Índices}\label{indices}}
+
+Cuando vimos las bases de datos relacionales hablamos de la importancia
+de los índices para hacer consultas de forma eficiente. En MongoDB
+también podemos utilizar índices.
+
+MongoDB crea un índice único en el campo \texttt{\_id} durante la
+creación de una colección. Para crear un índice utilizamos
+\href{https://docs.mongodb.com/manual/reference/method/db.collection.createIndex/}{\texttt{createIndex()}}.
+
+\begin{verbatim}
+db.stations.createIndex({"stations.name": 1})
+\end{verbatim}
+
+Para eliminar un índice, podemos usar
+\href{https://docs.mongodb.com/manual/reference/method/db.collection.dropIndex/}{\texttt{dropIndex()}}.
+
+\hypertarget{vistas}{%
+\section{Vistas}\label{vistas}}
+
+En las bases de datos relacionales existía el concepto de vista. Las
+vistas son consultas almacenadas (solo la información de cómo hacer la
+consulta, no los datos en sí mismos) que, de cara al usuario, actuan
+como si fuese una tabla física. En MongoDB podemos crear vistas de
+colecciones con
+\href{https://docs.mongodb.com/manual/reference/method/db.createView/}{\texttt{createView()}}
+cuya sintaxis es
+
+\begin{verbatim}
+db.createView(<view>, <source>, <pipeline>, <options>)
+\end{verbatim}
+
+Donde \texttt{\textless{}view\textgreater{}} es el nombre que le
+queremos dar a la vista entre comillas,
+\texttt{\textless{}source\textgreater{}} el nombre de la colección de la
+que queremos crear una vista y
+\texttt{\textless{}pipeline\textgreater{}} un \emph{array} tal y como lo
+usaríamos en un \emph{aggregation pipeline}.
+
+\begin{verbatim}
+db.createView(
+  "stations2",
+  "stations",
+  [{$unwind: "$stations"}]
+)
+\end{verbatim}
+
+Ya podríamos acceder a la nueva vista:
+
+\begin{verbatim}
+db.stations2.find().limit(3).pretty()
+\end{verbatim}
+
+\begin{quote}
+Ten en cuenta que \texttt{createView()} es un método de la base de
+datos. Por eso escribimos \texttt{db.createView()} y no
+\texttt{db.coleccion.createView()}.
+\end{quote}
+
+\hypertarget{joins}{%
+\section{Joins}\label{joins}}
+
+Aunque en MongoDB se promueve una estructura \emph{desnormalizada} de
+los datos, es posible hacer cruces en el caso de que sea necesario.
+
+Vamos a hacer un ejemplo entre todos. Primero, vamos a crear una vista
+con el maestro de las estaciones. \textbf{Escribe} una sentencia que
+genere una vista llamada \texttt{info\_estaciones} que devuelva
+
+\begin{verbatim}
+{ "name" : "Puerta del Sol A", "_id" : 1 }
+{ "name" : "Puerta del Sol B", "_id" : 2 }
+{ "name" : "Miguel Moya", "_id" : 3 }
+{ "name" : "Plaza Conde Suchil", "_id" : 4 }
+{ "name" : "Malasaña", "_id" : 5 }
+...
+\end{verbatim}
+
+Ahora vamos a añadir la dirección de la estación de origen para cada
+documento de la colección \texttt{usage} a través de el stage
+\href{https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/}{\texttt{\$lookup}}.
+Su sintaxis es
+
+\begin{verbatim}
+{
+   $lookup:
+     {
+       from: <collection to join>,
+       localField: <field from the input documents>,
+       foreignField: <field from the documents of the "from" collection>,
+       as: <output array field>
+     }
+}
+\end{verbatim}
+
+Y podemos hacerlo como
+
+\begin{verbatim}
+db.usage.aggregate(
+  {$limit: 1},
+  { $lookup: {
+      from: "info_estaciones",
+      localField: "idunplug_base",
+      foreignField: "_id",
+      as: "direccion"
+      }
+  }
+).pretty()
+\end{verbatim}
+
+\hypertarget{creacion-de-nuevas-colecciones}{%
+\section{Creación de nuevas
+colecciones}\label{creacion-de-nuevas-colecciones}}
+
+Podemos crear una nueva colección a partir del resultado de
+\texttt{aggregate()}. Para ello tenemos que utilizar el \emph{stage}
+\href{https://docs.mongodb.com/manual/reference/operator/aggregation/out/}{\texttt{\$out}}:
+
+\begin{verbatim}
+db.usage.aggregate([
+  {
+    $group: 
+    {
+      _id: {month: { $month: "$unplug_hourTime"}, day: { $dayOfMonth: "$unplug_hourTime"}},
+      cuenta: {$sum: 1}
+    }
+  },
+  {$out: "usage_month_day"}
+])
+\end{verbatim}
+
+
+\end{document}

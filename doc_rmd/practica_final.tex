@@ -1,0 +1,183 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Práctica taller MongoDB},
+            pdfauthor={Pablo Hidalgo},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Práctica taller MongoDB}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+  \subtitle{Taller de NoSQL}
+  \author{Pablo Hidalgo}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+    \date{}
+    \predate{}\postdate{}
+  
+
+\begin{document}
+\maketitle
+
+Entre las dos sesiones hemos visto cómo utilizar MongoDB para trabajar
+contra una base de datos. Durante la primera sesión hicimos un
+\emph{tour} rápido por alguno de los comandos más sencillos. Durante la
+segunda sesión hicimos consultas más complicadas sobre el conjunto de
+colecciones.
+
+Para esta práctica vamos a continuar con las dos colecciones
+\texttt{usage} y \texttt{stations} importadas en la última sesión.
+
+\begin{quote}
+\textbf{Pregunta 1:} extrae aquellos documentos de la colección
+\texttt{usage} que tengan el campo \texttt{track}.
+\end{quote}
+
+\begin{quote}
+\textbf{Pregunta 2:} El campo \texttt{track} contiene la información de
+los puntos en los que el viaje ha sido trazado. Para aquellos documentos
+que tienen en campo \texttt{track}, calcula el número de elementos del
+\emph{subcampo} \texttt{features} de track.
+\end{quote}
+
+\begin{quote}
+\textbf{Pregunta 3:} En \texttt{track.features} hay un array de
+documentos con \texttt{geometry.time}. ¿Todos los documentos con campo
+\texttt{track} tienen \texttt{track.features.geometry.time} con valor
+``Point''?
+\end{quote}
+
+\begin{quote}
+\textbf{Pregunta 4:} ¿Cuál es el tiempo de viaje máximo
+(\texttt{travel\_time}), mínimo y medio que ha tardado en recorrer un
+usuario que partía de la estación 14?
+\end{quote}
+
+\begin{quote}
+\textbf{Pregunta 5:} Calcula la media de \texttt{travel\_time} para cada
+día del mes. El resultado debe estar ordenado desde el día 1 del mes
+hasta el último.
+\end{quote}
+
+\begin{quote}
+\textbf{Pregunta 6:} ¿Sabrías decir cuántas estaciones están situadas en
+la calle Segovia?
+\end{quote}
+
+\begin{quote}
+\textbf{Pregunta 7:} El campo \texttt{\_id} está almacenado como una
+cadena de caracteres (\emph{string}). Convierte el campo para que
+aparezca como una fecha, es decir, del estilo
+\texttt{ISODate("2018-12-01T00:30:12.524Z")}.
+\end{quote}
+
+\begin{quote}
+\textbf{Pregunta 8:} ¿Cuál fue la estación o estaciones que más bases
+libres (\texttt{free\_bases}) tuvieron el día 8 de diciembre?
+\end{quote}
+
+\begin{quote}
+\textbf{Pregunta 9:} Calcula el tiempo medio de viaje entre cada par de
+estaciones
+\end{quote}
+
+\begin{quote}
+\textbf{Pregunta 10:} Genera un nueva colección denominada
+\texttt{stations2} que contenga un documento para cada estación y cada
+documento un array \texttt{states} con el par
+\texttt{\{timestamp,\ free\_bases\}}. El resultado debería ser algo
+similar a
+\end{quote}
+
+\begin{verbatim}
+{
+    "_id" : 136,
+    "states" : [
+        {
+            "timestamp" : ISODate("2018-12-01T00:30:12.524Z"),
+            "free_bases" : 19
+        },
+        {
+            "timestamp" : ISODate("2018-12-01T01:30:12.684Z"),
+            "free_bases" : 9
+        },
+        {
+            "timestamp" : ISODate("2018-12-01T03:30:15.860Z"),
+            "free_bases" : 0
+        },
+        {<más documentos>...}
+    ]
+}
+\end{verbatim}
+
+
+\end{document}
