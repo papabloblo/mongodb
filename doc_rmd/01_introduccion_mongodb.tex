@@ -1,0 +1,577 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Introducción a MongoDB},
+            pdfauthor={Pablo Hidalgo},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Introducción a MongoDB}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Pablo Hidalgo}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+    \date{}
+    \predate{}\postdate{}
+  
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\textbf{MongoDB} es una de las bases de datos NoSQL más utilizada. Ya
+hemos visto en clase que se trata de una base de datos orientada a
+documentos.
+
+\hypertarget{instalacion}{%
+\section{Instalación}\label{instalacion}}
+
+\begin{quote}
+La instalación para los sistemas operativos soportados está documentada
+\href{https://docs.mongodb.com/manual/installation/}{aquí}.
+\end{quote}
+
+Al final, pregunta se quiere instalar \textbf{MongoDB Compass}. Se trata
+de una interfaz gráfica que permite explorar los datos de forma visual y
+hacer algunas operaciones sencillas. Sin embargo, su capacidad es
+limitada. En este curso nos centraremos en el uso de la ventana de
+comandos
+
+\hypertarget{primeros-pasos}{%
+\section{Primeros pasos}\label{primeros-pasos}}
+
+Una vez que se ha completado la instalación, ya podemos empezar a
+\emph{divertirnos} con MongoDB.
+
+Si estás en Windows, busca el ejecutable \texttt{mongo.exe} (Lo habitual
+es que lo puedas encontrar en
+\texttt{C:\textbackslash{}Program\ Files\textbackslash{}MongoDB\textbackslash{}Server\textbackslash{}4.0\textbackslash{}bin\textbackslash{}mongo.exe}).
+
+Si estás en MacOS,
+
+\begin{quote}
+Asegúrate de que MongoDB está funcionando. Para ello, debes haber
+ejecutado en la línea de comandos \texttt{mongod} y tienes que haber
+obtenido algo como
+\texttt{initandlisten{]}\ waiting\ for\ connections\ on\ port\ 27017}.
+Ten cuidado de no cerrar esta ventana ya que matarías la sesión de
+MongoDB.
+\end{quote}
+
+Abre una nueva ventana de la línea de comandos y escribe
+
+\begin{verbatim}
+mongo master
+\end{verbatim}
+
+Esta sentencia genera una conexión al \emph{motor} de MongoDB y crea una
+base de datos \texttt{master} en el caso de que no exista previamente.
+
+Escribe \texttt{help} para ver qué sentencias puedes utilizar.
+
+Como nos hemos conectado a MongoDB con la sentencia
+\texttt{mongo\ master} estamos en la base de datos \texttt{master}.
+Podemos ver qué otras bases de datos tenemos disponibles escribiendo
+\texttt{show\ dbs} y cambiar a otra base de datos escribiendo
+\texttt{use\ nombre\_bbdd}.
+
+\textbf{Ahora mismo nuestra base de datos está vacía; tenemos que
+empezar a rellenarla con datos.} Para crear una colección (recuerda la
+nomenclatura en Mongo y piensa en que las colecciones son análogas a las
+tablas en un base de datos relacional) es tan fácil como empezar a
+añadir registros, ya que no es necesario crear una estructura (ni un
+esquema) simplemente hay que empezar a usarla. Además, si te diste
+cuenta antes, cuando ejecutamos \texttt{show\ dbs} no aparecía por
+ningún lado nuestra base de datos \texttt{master} ya que ésta no existe
+propiamente hasta que no comienza a tener valores. Para crear una
+colección \texttt{compras} tenemos que \textbf{insertar} un valor con
+ayuda del comando \texttt{db.compras.insert()}:
+
+\begin{verbatim}
+db.compras.insert({
+  nombre: "Pablo Hidalgo",
+  dni: 12345,
+  fecha_nacimiento: ISODate("1991-02-09"),
+  edad: 28,
+  articulos: [150, 756, 312],
+  direccion: {
+    calle: "Príncipe de Vergara",
+    numero: 43,
+    ciudad: "Madrid"
+  }
+})
+\end{verbatim}
+
+Como hemos visto en clase, los documentos (recuerda, una colección está
+compuesta de documentos, algo similar a una fila o un registro en una
+base de datos relacional) siguen un formato al estilo JSON
+(estrictamente, se tratan de
+\href{https://en.wikipedia.org/wiki/BSON}{BSON}) por lo que cualquier
+nuevo documento que añadamos debe seguir ese formato donde las llaves
+\texttt{\{...\}} denotan un objeto compuesto por parejas de
+atributo-valor y donde \texttt{{[}...{]}} significa un array.
+
+Si te fijas en el documento que acabamos de insertar, uno de los valores
+es \texttt{articulos} al que lo hemos declarado como un \emph{array}
+cosa que, por construcción, no era posible hacer en una base de datos
+relacional ya que uno de los principios es que una celda (la
+intersección entre una fila y una columna) solo podía contener un único
+valor. Eso nos podía llevar en algún caso a tener alguna información
+duplicada. Además, un propiedad relevante de los documentos es que se
+introduce de forma natural el concepto de jerarquía como puedes ver en
+el atributo \texttt{direccion}.
+
+Ahora podemos verificar que existe nuestra base de datos con
+\texttt{show\ dbs} y ver la colección con \texttt{show\ collections}.
+Podemos listar el contenido de una colección con \texttt{find()}:
+
+\begin{verbatim}
+db.ciudades.find()
+\end{verbatim}
+
+Como puedes ver, la sintaxis es muy diferente a la misma operación
+escrita en lenguaje SQL:
+
+\begin{verbatim}
+SELECT * 
+  FROM ciudades;
+\end{verbatim}
+
+Como habrás observado, el documento contiene un campo \texttt{\_id} que
+Mongo genera automáticamente y que se trata de un identificador único,
+algo así como el datatype \texttt{SERIAL} en PostgreSQL. Este
+\texttt{\_id} siempre tiene 12 bytes y está compuesto por un
+\emph{timestamp}, un identificador de la máquina cliente, un
+identificador del proceso del cliente y un contador de 3-bytes
+incremental.
+
+Aunque pueda parecer que para nosotros, como usuarios, cómo se genere
+\texttt{\_id} no es relevante, lo cierto es que esa forma de generarlo
+permite que cada máquina no tenga que conocer los identificadores que
+hayan generado otras siendo fundamental para poder lanzar procesos
+distribuidos (el \emph{dataype} SERIAL de PostgreSQL necesita conocer el
+último generado para incrementarlo en una unidad).
+
+\begin{quote}
+Cuando ejecutamos la función \texttt{find()}, la consola muestra cada
+documento en una sola línea que hace difícil la visualización. Puedes
+añadir al final \texttt{.pretty} para obtener una vista más intuitiva.
+Pruébalo con \texttt{db.ciudades.find().pretty()}
+\end{quote}
+
+Por completar nuestra colección, vamos a añadir algún documento más.
+Para añadir varios documentos a la vez en una colección, utilizamos
+\texttt{{[}...{]}}:
+
+\begin{verbatim}
+db.compras.insert(
+  [
+    {
+    nombre: "Andrea Pérez",
+    dni: 54321,
+    fecha_nacimiento: ISODate("1985-03-12"),
+    edad: 34,
+    articulos: [715, 1],
+    direccion: {
+      calle: "Alcalá",
+      numero: 69,
+      ciudad: "Madrid"
+    }
+  },
+  {
+    nombre: "Juan García",
+    dni: 11111,
+    fecha_nacimiento: ISODate("1975-10-01"),
+    edad: 44,
+    articulos: [635, 4441],
+    direccion: {
+      calle: "Cervantes",
+      numero: 3,
+      ciudad: "Alcorcón"
+    }
+  },
+  {
+    nombre: "Nerea Álvarez",
+    dni: 22222,
+    fecha_nacimiento: ISODate("1995-06-29"),
+    edad: 24,
+    direccion: {
+      calle: "Nueva",
+      numero: 1,
+      ciudad: "Alcobendas"
+    }
+  },
+  ]
+)
+\end{verbatim}
+
+Una función que puede resultar útil es saber cuándos documentos existen
+dentro de una colección. Esto lo podemos hacer con la función
+\texttt{count()}:
+
+\begin{verbatim}
+db.compras.count()
+\end{verbatim}
+
+\hypertarget{leyendo-datos}{%
+\section{Leyendo datos}\label{leyendo-datos}}
+
+Ya hemos visto que la función \texttt{find()} sin parámetros nos da
+todos los documentos. Para especificar unos criterios de búsqueda,
+tenemos que hacerlo de la siguiente forma
+
+\begin{verbatim}
+db.compras.find({dni: 12345})
+\end{verbatim}
+
+La función \texttt{find()} acepta un segundo parámetro opcional con el
+que especificar qué campos queremos obtener. Por ejemplo, si solo
+queremos el nombre (además del \texttt{\_id}), podemos escribir:
+
+\begin{verbatim}
+db.compras.find({dni: 12345}, {nombre: true})
+\end{verbatim}
+
+Si queremos obtener todos los campos excepto el nombre, podemos hacerlo
+con:
+
+\begin{verbatim}
+db.compras.find({dni: 12345}, {nombre: false})
+\end{verbatim}
+
+\begin{quote}
+¿Cómo harías para devolver los campos \texttt{nombre} y
+\texttt{fecha\_nacimiento} del registro con DNI 12345?
+\end{quote}
+
+\begin{verbatim}
+db.compras.find({dni: 12345}, {nombre: true, fecha_nacimiento: true})
+\end{verbatim}
+
+Igual que en PostgreSQL, en Mongo podemos construir queries específicas
+que nos permitan encontrar aquellos documentos que cumplan algún
+requisito.
+
+Por ejemplo, para encontrar aquellos clientes mayores de 30 años debemos
+escribir:
+
+\begin{verbatim}
+db.compras.find({edad: {$gt: 30}})
+\end{verbatim}
+
+En Mongo, los operaradores condicionales se escribe como
+\texttt{\{\$operador:\ valor\}}.
+
+\href{https://docs.mongodb.com/manual/reference/operator/query/\#query-selectors}{Aquí}
+se pueden consultar los operadores que existen en Mongo. Algunos
+habituales son:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{\$eq}: Valores \textbf{idénticos} a un valor especificado.
+\item
+  \texttt{\$gt}: Valores \textbf{mayores} que un valor especificado.
+\item
+  \texttt{\$lt}: Valores \textbf{menores} que un valor especificado.
+\item
+  \texttt{\$gte}: Valores \textbf{mayores o iguales} que un valor
+  especificado.
+\item
+  \texttt{\$lte}: Valores \textbf{menores o iguales} que un valor
+  especificado.
+\item
+  \texttt{\$in}: valores en un \textbf{array} de valores.
+\item
+  \texttt{\$ne}: Valores \textbf{distintos} a un valor especificado.
+\end{itemize}
+
+\begin{quote}
+Encuentra aquellos clientes cuya edad sea menor o igual que 34 años.
+\end{quote}
+
+\hypertarget{jerarquias-de-datos}{%
+\subsection{Jerarquías de datos}\label{jerarquias-de-datos}}
+
+Mongo está muy bien preparado para trabajar con jerarquías de datos.
+Para filtrar \emph{subdocumentos}, hay que separar los campos anidados
+por puntos. Por ejemplo, para encontrar aquellos clientes que viven en
+Madrid, lo haríamos
+
+\begin{verbatim}
+db.compras.find(
+  {"direccion.ciudad" : "Madrid"}
+)
+\end{verbatim}
+
+\hypertarget{operaciones-or}{%
+\subsection{\texorpdfstring{Operaciones
+\texttt{OR}}{Operaciones OR}}\label{operaciones-or}}
+
+Cuando utilizamos la función \texttt{find()} estamos utilizando
+implícitamente operaciones \texttt{and}, es decir, solo devuelve
+aquellos documentos que cumplan \textbf{todos} los criterios que hayamos
+especificado. Por ejemplo, la siguiente sentencia no devuelve ningún
+resultado ya que ningún documento satisface las dos condiciones
+\textbf{a la vez}:
+
+\begin{verbatim}
+db.compras.find(
+  {
+    "edad": 24,
+    "direccion.ciudad": "Madrid"
+  }
+)
+\end{verbatim}
+
+Sin embargo, si queremos obtener aquellos registros que satisfacen
+\emph{alguna} de las condiciones, necesitamos utilizar el operador
+\texttt{or}:
+
+\begin{verbatim}
+db.compras.find(
+  {
+    $or: [
+      {"edad": 24},
+      {"direccion.ciudad": "Madrid"}
+    ]
+  }
+)
+\end{verbatim}
+
+\begin{quote}
+\textbf{Ejercicio:} encuentra aquellos clientes que vivan en Madrid o en
+Alcobendas. ¿Sabrías hacerlo de \textbf{dos} formas distintas?
+\end{quote}
+
+\begin{verbatim}
+db.compras.find(
+  {
+    $or: [
+      {"direccion.ciudad": "Madrid"},
+      {"direccion.ciudad": "Alcobendas"}
+    ]
+  }
+)
+
+db.compras.find({"direccion.ciudad": {$in: ["Madrid", "Alcobendas"]}})
+\end{verbatim}
+
+\hypertarget{actualizando-datos}{%
+\subsection{Actualizando datos}\label{actualizando-datos}}
+
+Hasta ahora hemos añadido nuevos documentos a una colección. Otra tarea
+que querremos saber hacer es \textbf{cómo actualizar documentos ya
+existentes}. Para ello utilizamos la función
+\texttt{update(criterio,\ operacion)}. El primero de los parámetros,
+\texttt{criterio}, es el mismo tipo de objeto que se le pasa a la
+función \texttt{find()}; el segundo parámetro, \texttt{operacion}, es un
+objeto cuyos campos reemplazarán a aquellos documentos que concuerden
+con lo escrito en \texttt{criterio}.
+
+Por ejemplo, si quisiésemos actualizar el DNI y la fecha de nacimiento
+de un cliente, tendríamos que
+
+\begin{verbatim}
+db.compras.update(
+  {nombre: "Pablo Hidalgo"},
+  {$set : {dni: 11345, fecha_nacimiento: ISODate("1991-02-10")}}
+)
+\end{verbatim}
+
+Quizá te preguntes si es necesaria escribir \texttt{\$set}. Si en vez de
+la sentencia anterior escribiésemos
+
+\begin{verbatim}
+db.compras.update(
+  {nombre: "Pablo Hidalgo"},
+  {dni: 11345, fecha_nacimiento: ISODate("1991-02-10")}
+)
+\end{verbatim}
+
+Mongo entendería que lo que quieres es \textbf{reeemplazar por completo}
+el documento. Así que, presta atención cuando quieras actualizar datos.
+
+\begin{quote}
+Si has ejecutado la última sentencia, puedes volver al estado original
+ejecutando
+\texttt{db.compras.update(\ \{dni:\ 11345\},\ \{\ nombre:\ "Pablo\ Hidalgo",\ dni:\ 12345,\ fecha\_nacimiento:\ ISODate("1991-02-09"),\ edad:\ 28,\ articulos:\ {[}150,\ 756,\ 312{]},\ direccion:\ \{\ calle:\ "Príncipe\ de\ Vergara",\ numero:\ 43,\ ciudad:\ "Madrid"\ \}\ \})}
+\end{quote}
+
+Podemos hacer más cosas que modificar un determinado valor. Por ejemplo,
+\texttt{\$inc} nos permite incrementar un número por una cantidad
+determinada:
+
+\begin{verbatim}
+db.compras.update(
+{dni: 11345},
+{$inc: {edad: 1}}
+)
+\end{verbatim}
+
+Se van añadiendo constantemente nuevos operadores, por lo que es
+aconsejable consultar la documentación para estar al día de los cambios.
+Algunos relevantes son:
+
+\begin{itemize}
+\tightlist
+\item
+  \href{https://docs.mongodb.com/manual/reference/operator/update/set/}{\texttt{\$set}}:
+  cambia un campo con un valor dado.
+\item
+  \href{https://docs.mongodb.com/manual/reference/operator/update/unset/}{\texttt{\$unset}}:
+  elimina un campo.
+\item
+  \href{https://docs.mongodb.com/manual/reference/operator/update/inc/}{\texttt{\$inc}}:
+  incrementa un campo por un número dado.
+\item
+  \href{https://docs.mongodb.com/manual/reference/operator/update/pop/}{\texttt{\$pop}}:
+  eliman el último (o el primer) elemento de un array.
+\item
+  \href{https://docs.mongodb.com/manual/reference/operator/update/push/}{\texttt{\$push}}:
+  añade un elemento a un array.
+\end{itemize}
+
+\begin{quote}
+\textbf{Ejercicio:} El cliente con DNI 11111 ha comprado el artículo 1.
+Actualiza la base de datos para reflejar esta compra.
+\end{quote}
+
+\begin{verbatim}
+db.compras.update(
+  {dni: 11111},
+  {
+    $push: {articulos: 1}
+  }
+)
+\end{verbatim}
+
+\hypertarget{eliminar-datos}{%
+\subsection{Eliminar datos}\label{eliminar-datos}}
+
+Otra operación habitual es la de \textbf{eliminar documentos} de una
+colección. En Mongo esto se puede hacer simplemente reemplazando
+\texttt{find()} por \texttt{remove()} y todos los documentos que
+satisfagan la condición se eliminarán.
+
+Antes de eliminar cualquier documento, es recomendable ejecutar
+\texttt{find()} para comprobar que el criterio está bien construido y
+hace lo que queremos que haga.
+
+\begin{quote}
+\textbf{Ejercicio:} Elimina todos los clientes que vivan en Madrid.
+\end{quote}
+
+\hypertarget{eliminar-una-coleccion-y-una-base-de-datos}{%
+\subsection{Eliminar una colección y una base de
+datos}\label{eliminar-una-coleccion-y-una-base-de-datos}}
+
+Por último, dos tareas que pueden ser útiles son las de eliminar una
+colección entera (junto con todos su documentos) y eliminar
+completamente una base de datos.
+
+Para eliminar una colección utilizamos \texttt{drop()}. Para comprobar
+su funcionamiento, primero vamos a asegurarnos de las colecciones
+existentes en nuestra base de datos:
+
+\begin{verbatim}
+show collections
+\end{verbatim}
+
+Para eliminar la colección \texttt{compras} podemos ejecutar
+
+\begin{verbatim}
+db.ciudades.drop()
+\end{verbatim}
+
+Para eliminar una base de datos completa, necesitamos utilizar
+\texttt{dropDatabase()}. Igual que en el caso anterior, primero
+mostramos las bases de datos disponibles:
+
+\begin{verbatim}
+show dbs
+\end{verbatim}
+
+y no situamos en aquella que queramos borar (por ejemplo,
+\texttt{use\ master}).
+
+Y, \textbf{para borrar la base de datos que estemos usando}, escribimos:
+
+\begin{verbatim}
+db.dropDatabase()
+\end{verbatim}
+
+
+\end{document}

@@ -2,9 +2,11 @@
 title: "Introducción a MongoDB"
 author: "Pablo Hidalgo"
 output:
+  pdf_document: 
+    toc: true
+    number_section: true
   html_document:
     theme: journal
-  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -207,7 +209,7 @@ db.compras.find({dni: 12345}, {nombre: false})
 
 > ¿Cómo harías para devolver los campos `nombre` y `fecha_nacimiento` del registro con DNI 12345?
 
-```{collapse=TRUE}
+```{}
 db.compras.find({dni: 12345}, {nombre: true, fecha_nacimiento: true})
 ```
 
@@ -272,7 +274,7 @@ db.compras.find(
 
 > **Ejercicio:** encuentra aquellos clientes que vivan en Madrid o en Alcobendas. ¿Sabrías hacerlo de **dos** formas distintas?
 
-```{collapse=TRUE}
+```{}
 db.compras.find(
   {
     $or: [

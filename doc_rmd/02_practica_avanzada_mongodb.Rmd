@@ -4,7 +4,8 @@ author: "Pablo Hidalgo"
 subtitle: Taller de NoSQL
 output:
   pdf_document: 
-    number_sections: yes
+    toc: true
+    number_section: true
   html_document: default
 ---
 
