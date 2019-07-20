@@ -81,14 +81,14 @@ Si te fijas en el documento que acabamos de insertar, uno de los valores es `art
 
 Ahora podemos verificar que existe nuestra base de datos con `show dbs` y ver la colección con `show collections`. Podemos listar el contenido de una colección con `find()`:
 ```{}
-db.ciudades.find()
+db.compras.find()
 ```
 
 Como puedes ver, la sintaxis es muy diferente a la misma operación escrita en lenguaje SQL:
 
 ```{}
 SELECT * 
-  FROM ciudades;
+  FROM compras;
 ```
 
 Como habrás observado, el documento contiene un campo `_id` que Mongo genera automáticamente y que se trata de un identificador único, algo así como el datatype `SERIAL` en PostgreSQL. Este `_id` siempre tiene 12 bytes y está compuesto por un *timestamp*, un identificador de la máquina cliente, un identificador del proceso del cliente y un contador de 3-bytes incremental. 
