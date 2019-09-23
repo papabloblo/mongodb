@@ -26,9 +26,7 @@ actors : [
   "Brad Pitt",
   "Edward Norton"
 ]
-```
 
-```{}
 title : "Pulp Fiction",
 writer : "Quentin Tarantino",
 year : 1994,
@@ -36,9 +34,7 @@ actors : [
   "John Travolta",
   "Uma Thurman"
 ]
-```
 
-```{}
 title : "Inglorious Basterds",
 writer : "Quentin Tarantino",
 year : 2009,
@@ -47,23 +43,17 @@ actors : [
   "Diane Kruger",
   "Eli Roth"
 ]
-```
 
-```{}
 title : "The Hobbit: An Unexpected Journey",
 writer : "J.R.R. Tolkein",
 year : 2012,
 franchise : "The Hobbit"
-```
 
-```{}
 title : "The Hobbit: The Desolation of Smaug",
 writer : "J.R.R. Tolkein",
 year : 2013,
 franchise : "The Hobbit"
-```
 
-```{}
 title : "The Hobbit: The Battle of the Five Armies",
 writer : "J.R.R. Tolkein",
 year : 2012,
